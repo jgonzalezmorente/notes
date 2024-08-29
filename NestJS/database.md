@@ -672,3 +672,131 @@ Este comando deshará la última migración ejecutada. Puedes ejecutar este coma
 ### Resumen
 
 Las migraciones en TypeORM son una herramienta poderosa para gestionar los cambios en el esquema de la base de datos de manera controlada y ordenada. Utilizando la CLI de TypeORM, puedes generar, ejecutar y revertir migraciones, asegurando que tu base de datos evoluciona junto con el modelo de datos de tu aplicación sin perder integridad ni datos. Aunque las migraciones están separadas del ciclo de vida de la aplicación NestJS, siguen siendo un componente crítico para mantener la consistencia en entornos de desarrollo y producción.
+
+
+## Multiple databases
+
+Cuando trabajas con proyectos que requieren múltiples conexiones a bases de datos, NestJS y TypeORM te permiten configurarlas de manera efectiva utilizando el módulo `TypeOrmModule`. Este enfoque es útil cuando diferentes partes de tu aplicación necesitan acceder a distintas bases de datos.
+
+### Configuración de Múltiples Conexiones a Bases de Datos
+
+Para configurar múltiples conexiones de bases de datos en NestJS, debes seguir estos pasos:
+
+#### 1. **Configuración Básica de Conexiones**
+
+Primero, debes definir las conexiones a las bases de datos en tu módulo principal (`AppModule`). Cada conexión puede tener su propio conjunto de entidades y configuración de conexión.
+
+**Ejemplo de Configuración:**
+
+```typescript
+const defaultOptions = {
+  type: 'postgres',
+  port: 5432,
+  username: 'user',
+  password: 'password',
+  database: 'db',
+  synchronize: true,
+};
+
+@Module({
+  imports: [
+    // Conexión para la base de datos principal de usuarios
+    TypeOrmModule.forRoot({
+      ...defaultOptions,
+      host: 'user_db_host',
+      entities: [User],  // Entidades asociadas a esta base de datos
+    }),
+    // Conexión para la base de datos de álbumes
+    TypeOrmModule.forRoot({
+      ...defaultOptions,
+      name: 'albumsConnection',  // Nombre de la conexión para identificación
+      host: 'album_db_host',
+      entities: [Album],  // Entidades asociadas a esta base de datos
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+**Puntos Clave:**
+
+- **Nombres de Conexión**: Es crucial asignar un nombre (`name`) a cada conexión si tienes más de una. Si no especificas un nombre, la conexión se asigna al nombre predeterminado (`default`). No debes tener múltiples conexiones sin nombre o con el mismo nombre, ya que esto podría causar que una conexión sobrescriba a la otra.
+  
+- **Entidades**: Cada conexión puede tener un conjunto diferente de entidades que estarán disponibles solo dentro de esa conexión.
+
+#### 2. **Uso de Conexiones en Módulos**
+
+Una vez configuradas las conexiones, debes especificar qué conexión usar para cada entidad cuando utilices `TypeOrmModule.forFeature()` y el decorador `@InjectRepository()`.
+
+**Ejemplo de Configuración de Módulo:**
+
+```typescript
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([User]),  // Usa la conexión predeterminada
+    TypeOrmModule.forFeature([Album], 'albumsConnection'),  // Usa la conexión 'albumsConnection'
+  ],
+})
+export class AppModule {}
+```
+
+**Puntos Clave:**
+
+- **`TypeOrmModule.forFeature([User])`**: Esto asocia la entidad `User` con la conexión predeterminada.
+- **`TypeOrmModule.forFeature([Album], 'albumsConnection')`**: Esto asocia la entidad `Album` con la conexión `albumsConnection`.
+
+#### 3. **Inyección de Dependencias**
+
+Puedes inyectar un `DataSource`, `EntityManager` o un repositorio específico asociado a una conexión particular utilizando los decoradores `@InjectDataSource()` y `@InjectEntityManager()`.
+
+**Ejemplo de Inyección en un Servicio:**
+
+```typescript
+@Injectable()
+export class AlbumsService {
+  constructor(
+    @InjectDataSource('albumsConnection')
+    private dataSource: DataSource,
+    @InjectEntityManager('albumsConnection')
+    private entityManager: EntityManager,
+  ) {}
+}
+```
+
+**Puntos Clave:**
+
+- **`@InjectDataSource('albumsConnection')`**: Inyecta el `DataSource` asociado con la conexión `albumsConnection`.
+- **`@InjectEntityManager('albumsConnection')`**: Inyecta el `EntityManager` asociado con la conexión `albumsConnection`.
+
+#### 4. **Inyección en Proveedores**
+
+También puedes inyectar cualquier `DataSource` en los proveedores utilizando `getDataSourceToken()`.
+
+**Ejemplo de Inyección en un Proveedor:**
+
+```typescript
+@Module({
+  providers: [
+    {
+      provide: AlbumsService,
+      useFactory: (albumsConnection: DataSource) => {
+        return new AlbumsService(albumsConnection);
+      },
+      inject: [getDataSourceToken('albumsConnection')],
+    },
+  ],
+})
+export class AlbumsModule {}
+```
+
+**Puntos Clave:**
+
+- **`getDataSourceToken('albumsConnection')`**: Este método devuelve el token necesario para inyectar el `DataSource` asociado a la conexión `albumsConnection`.
+
+### Resumen
+
+1. **Configura múltiples conexiones** en el módulo principal utilizando `TypeOrmModule.forRoot()`, asignando un nombre único a cada conexión.
+2. **Asocia entidades** específicas con cada conexión utilizando `TypeOrmModule.forFeature()`, especificando el nombre de la conexión cuando sea necesario.
+3. **Inyecta `DataSource`, `EntityManager` o repositorios** específicos en servicios y proveedores utilizando `@InjectDataSource()` y `@InjectEntityManager()` con el nombre de la conexión correspondiente.
+
+Este enfoque permite que una aplicación NestJS maneje múltiples bases de datos de manera eficiente, separando la lógica y las entidades según las necesidades de cada conexión de base de datos.
