@@ -793,6 +793,78 @@ export class AlbumsModule {}
 
 - **`getDataSourceToken('albumsConnection')`**: Este método devuelve el token necesario para inyectar el `DataSource` asociado a la conexión `albumsConnection`.
 
+### Aclaración:
+
+### 1. **Inyección Directa en el Constructor (Primera Forma)**
+
+Cuando utilizas la inyección directa en el constructor, necesitas usar los decoradores `@InjectDataSource()` y `@InjectEntityManager()` para especificar qué instancia específica (en este caso, la conexión o el `EntityManager` de una conexión específica) deseas inyectar.
+
+```typescript
+@Injectable()
+export class AlbumsService {
+  constructor(
+    @InjectDataSource('albumsConnection')
+    private readonly dataSource: DataSource,
+    @InjectEntityManager('albumsConnection')
+    private readonly entityManager: EntityManager,
+  ) {}
+
+  // Métodos que usan dataSource o entityManager
+}
+```
+
+- **Decoradores `@InjectDataSource()` y `@InjectEntityManager()`:** Estos decoradores son necesarios para que NestJS sepa qué instancia inyectar, especialmente cuando trabajas con múltiples bases de datos.
+
+### 2. **Inyección Usando una Fábrica (`useFactory`) (Segunda Forma)**
+
+En el enfoque de la fábrica (`useFactory`), la inyección de las dependencias se realiza dentro de la función de fábrica, y no necesitas usar los decoradores `@InjectDataSource()` o `@InjectEntityManager()` dentro del constructor del servicio. La fábrica se encarga de proporcionar las dependencias correctas cuando se instancia el servicio.
+
+```typescript
+@Module({
+  providers: [
+    {
+      provide: AlbumsService,
+      useFactory: (albumsConnection: DataSource, entityManager: EntityManager) => {
+        return new AlbumsService(albumsConnection, entityManager);
+      },
+      inject: [
+        getDataSourceToken('albumsConnection'),
+        getEntityManagerToken('albumsConnection'),
+      ],
+    },
+  ],
+})
+export class AlbumsModule {}
+```
+
+Y en el servicio:
+
+```typescript
+@Injectable()
+export class AlbumsService {
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly entityManager: EntityManager,
+  ) {}
+
+  // Métodos que usan dataSource o entityManager
+}
+```
+
+- **Sin Decoradores:** Como las dependencias se inyectan a través de la fábrica (`useFactory`), no necesitas los decoradores en el constructor.
+
+### Resumen de las Diferencias:
+
+- **Inyección Directa con Decoradores:**
+  - Necesitas usar `@InjectDataSource()` y `@InjectEntityManager()` en el constructor para especificar qué instancia inyectar.
+  - Es más directo y suele ser suficiente para la mayoría de los casos.
+
+- **Inyección con Fábrica (`useFactory`):**
+  - No necesitas usar decoradores en el constructor, ya que las dependencias se inyectan a través de la función de fábrica.
+  - Ofrece mayor flexibilidad si necesitas ejecutar lógica adicional durante la creación de instancias o si trabajas con configuraciones más complejas.
+
+Ambos enfoques son válidos, y la elección entre ellos depende de la complejidad de tu aplicación y de si necesitas personalizar la manera en que las dependencias son inyectadas.
+
 ### Resumen
 
 1. **Configura múltiples conexiones** en el módulo principal utilizando `TypeOrmModule.forRoot()`, asignando un nombre único a cada conexión.
