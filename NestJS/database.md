@@ -1797,3 +1797,115 @@ describe('UsersService', () => {
 - **Pruebas sin Base de Datos**: Al usar mocks, puedes probar la lógica de tu aplicación sin necesidad de una base de datos real, lo que facilita las pruebas unitarias y las hace más eficientes.
 
 Este enfoque es fundamental en el testing moderno, ya que permite a los desarrolladores asegurar la calidad del código sin depender de recursos externos costosos en términos de tiempo y configuración.
+
+En el ejemplo anterior no mencioné directamente el uso de `TransactionRunner`, pero puedo explicarte cómo lo incorporarías en una prueba si decides encapsular la lógica de la transacción en una clase como `TransactionRunner`.
+
+### ¿Qué es `TransactionRunner`?
+
+`TransactionRunner` es una clase de ayuda que encapsula la lógica para manejar transacciones en Sequelize. Esto es útil porque te permite centralizar el manejo de transacciones, facilitando su prueba y reutilización. Además, simplifica el mocking en las pruebas unitarias, ya que solo necesitas mockear un número limitado de métodos en lugar de toda la API de Sequelize.
+
+### Definiendo `TransactionRunner`
+
+Primero, vamos a definir la clase `TransactionRunner`:
+
+```typescript
+import { Sequelize, Transaction } from 'sequelize-typescript';
+
+export class TransactionRunner {
+  constructor(private sequelize: Sequelize) {}
+
+  async runTransaction<T>(work: (transaction: Transaction) => Promise<T>): Promise<T> {
+    return this.sequelize.transaction(work);
+  }
+}
+```
+
+### Modificando `UsersService` para usar `TransactionRunner`
+
+Ahora, actualizamos el servicio `UsersService` para que utilice `TransactionRunner` en lugar de interactuar directamente con Sequelize:
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { User } from './user.model';
+import { TransactionRunner } from './transaction-runner';
+
+@Injectable()
+export class UsersService {
+  constructor(
+    private userModel: typeof User,
+    private transactionRunner: TransactionRunner,
+  ) {}
+
+  async createMany(users: { firstName: string; lastName: string }[]) {
+    return this.transactionRunner.runTransaction(async (t) => {
+      for (const user of users) {
+        await this.userModel.create(user, { transaction: t });
+      }
+    });
+  }
+}
+```
+
+### Probando `UsersService` con `TransactionRunner`
+
+Ahora que `UsersService` utiliza `TransactionRunner`, podemos enfocarnos en mockear `TransactionRunner` en nuestras pruebas unitarias.
+
+#### Mocking y Pruebas
+
+1. **Mocking del `TransactionRunner`**:
+   - Mockeamos el método `runTransaction` de `TransactionRunner` para simular el comportamiento de la transacción.
+
+2. **Mock del Modelo `User`**:
+   - También necesitamos mockear el modelo `User` como antes.
+
+```typescript
+import { Transaction } from 'sequelize';
+import { TransactionRunner } from './transaction-runner';
+import { UsersService } from './users.service';
+
+const mockUserModel = {
+  create: jest.fn(),
+};
+
+const mockTransaction: Transaction = {} as Transaction;  // Simulación básica de la transacción
+
+const mockTransactionRunner = {
+  runTransaction: jest.fn((work) => work(mockTransaction)),
+};
+
+describe('UsersService', () => {
+  let service: UsersService;
+
+  beforeEach(() => {
+    service = new UsersService(mockUserModel as any, mockTransactionRunner as any);
+  });
+
+  it('should create multiple users within a transaction', async () => {
+    const users = [
+      { firstName: 'Abraham', lastName: 'Lincoln' },
+      { firstName: 'John', lastName: 'Boothe' },
+    ];
+
+    await service.createMany(users);
+
+    expect(mockTransactionRunner.runTransaction).toHaveBeenCalledTimes(1);
+    expect(mockUserModel.create).toHaveBeenCalledTimes(2);
+    expect(mockUserModel.create).toHaveBeenCalledWith(users[0], { transaction: mockTransaction });
+    expect(mockUserModel.create).toHaveBeenCalledWith(users[1], { transaction: mockTransaction });
+  });
+});
+```
+
+### Explicación
+
+- **`mockTransactionRunner.runTransaction`**: Simula la ejecución de una transacción. Este mock permite verificar que `runTransaction` se haya llamado correctamente y que la lógica de transacción dentro del callback funcione como se espera.
+
+- **Inyección de `TransactionRunner`**: Al inyectar `TransactionRunner` en `UsersService`, las pruebas se simplifican porque solo necesitas controlar `runTransaction` y el modelo `User`.
+
+### Resumen
+
+- **`TransactionRunner`**: Centraliza la lógica de manejo de transacciones en una clase reutilizable.
+- **Pruebas Simplificadas**: Al utilizar `TransactionRunner`, el mock y las pruebas se simplifican, porque reduces la cantidad de métodos que necesitas mockear.
+- **Mocking**: En las pruebas unitarias, mockeas `runTransaction` de `TransactionRunner` para verificar que la transacción se maneje como se espera.
+
+Este enfoque te proporciona un código más modular y pruebas más fáciles de escribir y mantener, ya que reduces la complejidad de interactuar directamente con la API de Sequelize en cada prueba.
