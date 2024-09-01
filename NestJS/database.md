@@ -95,6 +95,177 @@ Esto permite que `dataSource` esté disponible para su uso en cualquier lugar de
 ### **Conclusión**
 Integrar TypeORM con NestJS es un proceso sencillo y altamente configurable. La flexibilidad de TypeORM, combinada con las características de NestJS, facilita la creación de aplicaciones robustas que interactúan de manera eficiente con diversas bases de datos. Es importante seguir buenas prácticas, como evitar `synchronize: true` en producción, para asegurar la estabilidad y seguridad de la aplicación.
 
+## Repository pattern
+
+### El Patrón de Repositorio en TypeORM con NestJS
+
+El patrón de repositorio es un patrón de diseño que abstrae el acceso a la base de datos, permitiendo que la lógica de acceso a los datos esté encapsulada dentro de clases específicas llamadas "repositorios". TypeORM implementa este patrón, lo que facilita trabajar con entidades en tu aplicación NestJS.
+
+### Definición de una Entidad
+
+Para utilizar el patrón de repositorio, primero debes definir una entidad. Aquí tienes un ejemplo de una entidad `User`:
+
+**user.entity.ts**
+
+```typescript
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+
+@Entity()
+export class User {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  firstName: string;
+
+  @Column()
+  lastName: string;
+
+  @Column({ default: true })
+  isActive: boolean;
+}
+```
+
+- **`@Entity()`**: Indica que esta clase es una entidad que representa una tabla en la base de datos.
+- **`@PrimaryGeneratedColumn()`**: Marca la columna `id` como la clave primaria que se genera automáticamente.
+- **`@Column()`**: Define las columnas `firstName`, `lastName` y `isActive` en la tabla `User`.
+
+### Configuración del Módulo con `TypeOrmModule`
+
+Para que TypeORM reconozca la entidad `User`, debes registrar la entidad en la configuración del módulo principal (`AppModule`):
+
+**app.module.ts**
+
+```typescript
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './users/user.entity';
+
+@Module({
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      username: 'root',
+      password: 'root',
+      database: 'test',
+      entities: [User],
+      synchronize: true,
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+- **`TypeOrmModule.forRoot()`**: Configura la conexión a la base de datos y registra las entidades que TypeORM gestionará.
+- **`entities: [User]`**: Especifica las entidades que se utilizarán en la aplicación.
+
+### Configuración de `UsersModule` con Repositorios
+
+En un módulo dedicado, como `UsersModule`, se registran las entidades utilizando `TypeOrmModule.forFeature()`. Esto hace que los repositorios correspondientes a esas entidades estén disponibles en el módulo.
+
+**users.module.ts**
+
+```typescript
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersService } from './users.service';
+import { UsersController } from './users.controller';
+import { User } from './user.entity';
+
+@Module({
+  imports: [TypeOrmModule.forFeature([User])],
+  providers: [UsersService],
+  controllers: [UsersController],
+})
+export class UsersModule {}
+```
+
+- **`TypeOrmModule.forFeature([User])`**: Registra el repositorio para la entidad `User` dentro del módulo `UsersModule`.
+
+### Uso de Repositorios en un Servicio
+
+Una vez registrado el repositorio, puedes inyectarlo en un servicio usando el decorador `@InjectRepository()` para interactuar con la base de datos.
+
+**users.service.ts**
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './user.entity';
+
+@Injectable()
+export class UsersService {
+  constructor(
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
+  ) {}
+
+  findAll(): Promise<User[]> {
+    return this.usersRepository.find();
+  }
+
+  findOne(id: number): Promise<User | null> {
+    return this.usersRepository.findOneBy({ id });
+  }
+
+  async remove(id: number): Promise<void> {
+    await this.usersRepository.delete(id);
+  }
+}
+```
+
+- **`@InjectRepository(User)`**: Inyecta el repositorio asociado con la entidad `User`.
+- **`Repository<User>`**: El repositorio proporciona métodos como `find`, `findOneBy`, y `delete` para interactuar con los registros de `User` en la base de datos.
+
+### Re-exportación de Módulos
+
+Si necesitas usar el repositorio en otros módulos, puedes re-exportar `TypeOrmModule` en tu módulo `UsersModule`:
+
+**users.module.ts**
+
+```typescript
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './user.entity';
+
+@Module({
+  imports: [TypeOrmModule.forFeature([User])],
+  exports: [TypeOrmModule],  // Re-exporta TypeOrmModule para que esté disponible en otros módulos
+})
+export class UsersModule {}
+```
+
+### Uso en Otro Módulo
+
+Si otro módulo, como `UserHttpModule`, necesita usar `UsersService` o el repositorio de `User`, simplemente importa `UsersModule`.
+
+**users-http.module.ts**
+
+```typescript
+import { Module } from '@nestjs/common';
+import { UsersModule } from './users.module';
+import { UsersService } from './users.service';
+import { UsersController } from './users.controller';
+
+@Module({
+  imports: [UsersModule],
+  providers: [UsersService],
+  controllers: [UsersController],
+})
+export class UserHttpModule {}
+```
+
+### Resumen
+
+- **Patrón de Repositorio**: TypeORM implementa el patrón de repositorio, permitiendo que cada entidad tenga su propio repositorio que encapsula la lógica de acceso a datos.
+- **`TypeOrmModule.forFeature()`**: Registra entidades y hace que sus repositorios estén disponibles dentro del módulo.
+- **Inyección de Repositorios**: Usa `@InjectRepository()` para inyectar repositorios en los servicios, permitiendo realizar operaciones CRUD sobre las entidades.
+
+Este patrón ayuda a mantener la lógica de acceso a datos organizada y reutilizable, lo que facilita la gestión de la persistencia de datos en aplicaciones NestJS.
+
 ## Relations
 
 A continuación se explica cómo establecer relaciones entre tablas en una base de datos utilizando TypeORM en NestJS. Las relaciones son conexiones entre dos o más tablas basadas en campos comunes, como claves primarias y foráneas.
