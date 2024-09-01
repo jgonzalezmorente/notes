@@ -32,6 +32,8 @@ A continuación se detalla cómo integrar TypeORM, un ORM (Object Relational Map
 ### 1. **¿Qué es TypeORM y por qué usarlo?**
 TypeORM es un ORM (Object Relational Mapper) diseñado para TypeScript. Permite interactuar con bases de datos relacionales (como MySQL, PostgreSQL, SQLite) y algunas NoSQL (como MongoDB) de manera más sencilla, utilizando objetos y clases de TypeScript. Dado que está escrito en TypeScript, se integra perfectamente con el framework NestJS.
 
+[Documentación TypeORM](https://typeorm.io/)
+
 ### 2. **Instalación de Dependencias**
 Para empezar a usar TypeORM en tu proyecto NestJS, primero necesitas instalar las dependencias necesarias. En el ejemplo proporcionado, se utiliza MySQL como sistema de gestión de bases de datos, por lo que se instala el cliente de MySQL junto con TypeORM y el paquete de integración de NestJS:
 
