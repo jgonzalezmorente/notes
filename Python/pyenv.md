@@ -1,4 +1,4 @@
-### Guía de uso de `pyenv` y `pyenv-virtualenv`
+# Guía de uso de `pyenv` y `pyenv-virtualenv`
 
 `pyenv` es una herramienta para gestionar diferentes versiones de Python en tu sistema. `pyenv-virtualenv` es un complemento que añade la capacidad de gestionar entornos virtuales para cada versión de Python que tengas instalada.
 
