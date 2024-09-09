@@ -30,6 +30,7 @@ Si estás en macOS, una manera sencilla de instalar **nvm** es utilizando **Home
    ```bash
    export NVM_DIR="$HOME/.nvm"
    [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh" # This loads nvm
+   [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
    ```
 
 5. Recarga el archivo de configuración del shell con el siguiente comando:
