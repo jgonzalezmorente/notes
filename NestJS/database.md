@@ -765,7 +765,7 @@ export class UsersModule {}
 ### Consideraciones
 
 - **No Request-Scoped**: Es importante tener en cuenta que los Subscribers no pueden ser de tipo request-scoped. Esto significa que su ciclo de vida no está vinculado a una solicitud HTTP específica, sino que son singleton dentro del contexto de la aplicación.
-  
+
 ### ¿Cuándo Usar Subscribers?
 
 Los Subscribers son útiles en situaciones donde necesitas realizar acciones automáticas o implementar lógica adicional cuando ocurren eventos específicos en la base de datos. Ejemplos comunes incluyen:
@@ -894,7 +894,7 @@ export class AppModule {}
 **Puntos Clave:**
 
 - **Nombres de Conexión**: Es crucial asignar un nombre (`name`) a cada conexión si tienes más de una. Si no especificas un nombre, la conexión se asigna al nombre predeterminado (`default`). No debes tener múltiples conexiones sin nombre o con el mismo nombre, ya que esto podría causar que una conexión sobrescriba a la otra.
-  
+
 - **Entidades**: Cada conexión puede tener un conjunto diferente de entidades que estarán disponibles solo dentro de esa conexión.
 
 #### 2. **Uso de Conexiones en Módulos**
@@ -1134,7 +1134,7 @@ it('should return an array of users', async () => {
 ### Explicación del Proceso
 
 1. **`getRepositoryToken(User)`**: Esta función obtiene un token que representa al repositorio de la entidad `User`. NestJS utiliza este token para inyectar la dependencia correcta en el servicio.
-  
+
 2. **`useValue: mockRepository`**: En el módulo de pruebas, `useValue` reemplaza el repositorio real con el mock. Cada vez que `UsersService` intenta acceder a `UsersRepository`, NestJS le proporcionará el `mockRepository`.
 
 3. **Simulación del Comportamiento**: Dentro de tus pruebas, puedes simular diferentes comportamientos del repositorio mock (como `find`, `save`, `remove`) para cubrir varios escenarios de prueba.
@@ -1383,7 +1383,7 @@ import { Sequelize } from 'sequelize-typescript';
 @Injectable()
 export class AppService {
   constructor(private sequelize: Sequelize) {}
-  
+
   // Ejemplo de uso de Sequelize en un método
   async getDatabaseInfo() {
     const dbInfo = await this.sequelize.query('SELECT DATABASE()');
@@ -1703,7 +1703,7 @@ export class Photo extends Model {
 
 - **Clave Foránea**: Es importante definir las claves foráneas en los modelos secundarios (como `Photo`) para establecer correctamente las relaciones.
 - **Decoradores Relacionales**: `@HasMany`, `@BelongsTo`, `@HasOne`, y `@BelongsToMany` son decoradores que te permiten definir los diferentes tipos de relaciones en Sequelize.
-  
+
 ### Resumen
 
 - **Relaciones en Sequelize**: Las relaciones entre tablas se definen utilizando decoradores específicos que establecen cómo se relacionan los modelos entre sí.
@@ -1956,9 +1956,9 @@ describe('UsersService', () => {
 
 ### Desglose del Ejemplo
 
-- **`jest.fn()`**: Crea una función simulada que puedes configurar y controlar en tus pruebas. 
+- **`jest.fn()`**: Crea una función simulada que puedes configurar y controlar en tus pruebas.
   - **Ejemplo**: `jest.fn((callback) => callback(mockTransaction))` simula el método `transaction` de Sequelize, ejecutando el callback y pasando un mock de la transacción.
-  
+
 - **`mockUserModel.create`**: Simula el método `create` del modelo `User`, lo que permite verificar que se llame con los argumentos correctos sin interactuar realmente con la base de datos.
 
 - **`mockSequelize.transaction`**: Simula el comportamiento de `transaction`, ejecutando el callback pasado y simulando que se ha hecho una transacción sin tocar la base de datos.
@@ -2082,3 +2082,199 @@ describe('UsersService', () => {
 - **Mocking**: En las pruebas unitarias, mockeas `runTransaction` de `TransactionRunner` para verificar que la transacción se maneje como se espera.
 
 Este enfoque te proporciona un código más modular y pruebas más fáciles de escribir y mantener, ya que reduces la complejidad de interactuar directamente con la API de Sequelize en cada prueba.
+
+## Migrations
+
+Las **migraciones** en el contexto de bases de datos permiten actualizar de manera incremental el esquema de la base de datos. Esto es útil para mantener el esquema en sincronía con el modelo de datos de la aplicación, mientras se preservan los datos existentes.
+
+### Puntos clave sobre las migraciones:
+1. **Propósito de las Migraciones**: Facilitan la gestión de cambios en el esquema de la base de datos, como agregar o eliminar columnas, modificar tipos de datos, etc. Esto se hace sin perder los datos existentes.
+2. **Uso en Sequelize**: Sequelize, un ORM que puede ser usado con NestJS, proporciona una CLI (interfaz de línea de comandos) dedicada para generar, ejecutar y revertir migraciones.
+3. **Independencia de las Clases de Migración**: Las clases de migración son independientes del código fuente de la aplicación NestJS. Esto significa que las migraciones se administran mediante la CLI de Sequelize y no pueden aprovechar características específicas de NestJS, como la inyección de dependencias.
+4. **Generación y Ejecución de Migraciones**: La CLI de Sequelize te permite crear archivos de migración que definen los cambios que deseas realizar en la base de datos. Luego, puedes ejecutar estas migraciones para aplicar los cambios o revertirlos si es necesario.
+
+Para más detalles sobre cómo crear y ejecutar migraciones con Sequelize, se recomienda consultar la documentación de Sequelize.
+
+## Multiple Databases
+Esta parte de la documentación explica cómo gestionar **múltiples conexiones de bases de datos** en una aplicación NestJS utilizando Sequelize. Esto es útil cuando un proyecto requiere conectarse a más de una base de datos.
+
+### Puntos clave para trabajar con múltiples bases de datos:
+1. **Configuración de Conexiones**:
+   - Para trabajar con múltiples bases de datos, se crean múltiples conexiones.
+   - Es importante asignar un nombre a cada conexión para diferenciarlas, especialmente cuando tienes más de una conexión activa. Si no se establece un nombre, la conexión recibe el nombre "default". Es fundamental no tener conexiones con el mismo nombre para evitar que se sobreescriban.
+
+2. **Ejemplo de Configuración**:
+   - Definimos las opciones por defecto para las conexiones, como tipo de base de datos (`dialect`), credenciales, y otros parámetros.
+   - Creamos dos conexiones diferentes, una para los modelos de `User` y otra para `Album`. Cada conexión apunta a una base de datos diferente.
+   - `SequelizeModule.forRoot()` se usa para establecer las conexiones con las opciones especificadas.
+
+   ```typescript
+   const defaultOptions = {
+     dialect: 'postgres',
+     port: 5432,
+     username: 'user',
+     password: 'password',
+     database: 'db',
+     synchronize: true,
+   };
+
+   @Module({
+     imports: [
+       SequelizeModule.forRoot({
+         ...defaultOptions,
+         host: 'user_db_host',
+         models: [User],
+       }),
+       SequelizeModule.forRoot({
+         ...defaultOptions,
+         name: 'albumsConnection',
+         host: 'album_db_host',
+         models: [Album],
+       }),
+     ],
+   })
+   export class AppModule {}
+   ```
+
+3. **Uso de las Conexiones**:
+   - Puedes especificar qué conexión usar para ciertos modelos. Por ejemplo, `User` usará la conexión por defecto, mientras que `Album` usará la conexión nombrada `albumsConnection`.
+   - `SequelizeModule.forFeature([Model], 'nombreConexion')` se usa para definir qué conexión se debe usar para un modelo en particular.
+
+   ```typescript
+   @Module({
+     imports: [
+       SequelizeModule.forFeature([User]),
+       SequelizeModule.forFeature([Album], 'albumsConnection'),
+     ],
+   })
+   export class AppModule {}
+   ```
+
+4. **Inyección de Conexiones**:
+   - Puedes inyectar una instancia específica de Sequelize que corresponda a una conexión dada usando `@InjectConnection('nombreConexion')`.
+   - Esto te permite trabajar directamente con la instancia de Sequelize para esa conexión particular en tu servicio.
+
+   ```typescript
+   @Injectable()
+   export class AlbumsService {
+     constructor(
+       @InjectConnection('albumsConnection')
+       private sequelize: Sequelize,
+     ) {}
+   }
+   ```
+
+5. **Inyección en Proveedores**:
+   - También puedes inyectar una instancia específica de Sequelize en los proveedores usando `useFactory` y `inject`.
+
+   ```typescript
+   @Module({
+     providers: [
+       {
+         provide: AlbumsService,
+         useFactory: (albumsSequelize: Sequelize) => {
+           return new AlbumsService(albumsSequelize);
+         },
+         inject: [getDataSourceToken('albumsConnection')],
+       },
+     ],
+   })
+   export class AlbumsModule {}
+   ```
+
+### Resumen:
+- **Múltiples Conexiones**: Permite definir y usar múltiples conexiones a bases de datos diferentes.
+- **Nombrado de Conexiones**: Es crucial nombrar las conexiones para diferenciarlas.
+- **Configuración Flexible**: Puedes especificar qué modelos usan qué conexiones y trabajar con instancias específicas de Sequelize para cada conexión.
+
+Este enfoque es especialmente útil cuando tienes diferentes bases de datos para diferentes entidades o cuando necesitas separar datos entre distintos sistemas.
+
+## Async Configuration
+
+La configuración asíncrona de `SequelizeModule` en NestJS te permite configurar las opciones del módulo de Sequelize de manera dinámica, en lugar de hacerlo de forma estática. Esto es útil cuando los valores de configuración dependen de algún proceso asíncrono, como la obtención de variables de entorno, configuración remota o cálculos que necesitan ejecutarse en tiempo de ejecución.
+
+### Métodos para Configuración Asíncrona
+
+#### 1. **Usando `useFactory`**
+   - **Función de Fábrica (`useFactory`)**: Define una función que devuelve las opciones de configuración para `SequelizeModule`. Esta función puede ser asíncrona y puede recibir dependencias inyectadas a través del parámetro `inject`.
+   - **Ejemplo Básico**:
+     ```typescript
+     SequelizeModule.forRootAsync({
+       useFactory: () => ({
+         dialect: 'mysql',
+         host: 'localhost',
+         port: 3306,
+         username: 'root',
+         password: 'root',
+         database: 'test',
+         models: [],
+       }),
+     });
+     ```
+   - **Con Inyección de Dependencias**: Puedes inyectar dependencias, como un servicio de configuración, en la función de fábrica.
+     ```typescript
+     SequelizeModule.forRootAsync({
+       imports: [ConfigModule], // Importa otros módulos si es necesario
+       useFactory: (configService: ConfigService) => ({
+         dialect: 'mysql',
+         host: configService.get('HOST'), // Usa el servicio para obtener valores
+         port: +configService.get('PORT'),
+         username: configService.get('USERNAME'),
+         password: configService.get('PASSWORD'),
+         database: configService.get('DATABASE'),
+         models: [],
+       }),
+       inject: [ConfigService], // Inyecta el ConfigService
+     });
+     ```
+
+#### 2. **Usando `useClass`**
+   - Permite definir una clase que implemente la interfaz `SequelizeOptionsFactory`. La clase debe proporcionar un método `createSequelizeOptions` que devuelva las opciones de configuración.
+   - **Ejemplo**:
+     ```typescript
+     SequelizeModule.forRootAsync({
+       useClass: SequelizeConfigService, // Indica la clase que implementa SequelizeOptionsFactory
+     });
+     ```
+   - La clase `SequelizeConfigService` debe implementar el método `createSequelizeOptions`.
+     ```typescript
+     @Injectable()
+     class SequelizeConfigService implements SequelizeOptionsFactory {
+       createSequelizeOptions(): SequelizeModuleOptions {
+         return {
+           dialect: 'mysql',
+           host: 'localhost',
+           port: 3306,
+           username: 'root',
+           password: 'root',
+           database: 'test',
+           models: [],
+         };
+       }
+     }
+     ```
+   - Esto permite tener una configuración más modular y reutilizable.
+
+#### 3. **Usando `useExisting`**
+   - Usa un proveedor existente, en lugar de crear una nueva instancia.
+   - Esto es útil si ya tienes un servicio de configuración en tu aplicación y quieres reutilizarlo.
+   - **Ejemplo**:
+     ```typescript
+     SequelizeModule.forRootAsync({
+       imports: [ConfigModule], // Importa el módulo que proporciona el ConfigService
+       useExisting: ConfigService, // Usa el ConfigService existente
+     });
+     ```
+   - La diferencia principal con `useClass` es que `useExisting` buscará en los módulos importados y reutilizará una instancia existente, en lugar de crear una nueva.
+
+### Resumen de Cada Método:
+- **`useFactory`**: Utiliza una función de fábrica para crear la configuración. Puede ser asíncrona y puede inyectar dependencias.
+- **`useClass`**: Utiliza una clase que implemente `SequelizeOptionsFactory` para proporcionar la configuración.
+- **`useExisting`**: Reutiliza un servicio existente para obtener las opciones de configuración.
+
+### Cuándo Usar Cada Método:
+- Usa **`useFactory`** cuando necesitas construir las opciones de forma dinámica y tal vez quieras inyectar dependencias directamente en la función.
+- Usa **`useClass`** si prefieres organizar la lógica de configuración en una clase separada, especialmente si la lógica es compleja o necesita ser reutilizada.
+- Usa **`useExisting`** cuando ya tienes un proveedor existente que puedes reutilizar para la configuración.
+
+Estos métodos ofrecen flexibilidad para configurar `SequelizeModule` en función de las necesidades de tu aplicación, permitiéndote trabajar con configuraciones más complejas o dependientes de valores dinámicos.
