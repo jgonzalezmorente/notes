@@ -3,11 +3,11 @@
 ### Índice:
 1. [¿Qué es Docker?](#qué-es-docker)
 2. [Conceptos clave en Docker](#conceptos-clave-en-docker)
-   - Imágenes
-   - Contenedores
-   - Dockerfile
-   - Volúmenes
-   - Redes
+   - [Imágenes](#1-imágenes)
+   - [Contenedores](#2-contenedores)
+   - [Dockerfile](#3-dockerfile)
+   - [Volúmenes](#4-volúmenes)
+   - [Redes](#5-redes)
 3. [Comandos básicos de Docker](#comandos-básicos-de-docker)
 4. [Cómo crear un Dockerfile](#cómo-crear-un-dockerfile)
 5. [¿Qué es Docker Compose?](#qué-es-docker-compose)
@@ -83,6 +83,11 @@ Las **redes** en Docker permiten la comunicación entre contenedores de manera s
 6. **Ver logs de un contenedor**:
    ```bash
    docker logs nombre-del-contenedor
+   ```
+
+6. **Acceder al contenedor**:
+   ```bash
+   docker exec -it nombre-del-contenedor /bin/bash
    ```
 
 ---
