@@ -1,8 +1,26 @@
 ### Controladores
 
+## Índice
+1. [Enrutamiento](#enrutamiento)
+1. [Opciones para manipular respuestas](#opciones-para-manipular-respuestas)
+1. [Objeto de solicitud](#objeto-de-solicitud)
+1. [Parámetros de ruta](#parámetros-de-ruta)
+1. [Código de estado](#código-de-estado)
+1. [Redirección](#redirección)
+1. [Wildcards en rutas](#wildcards-en-rutas)
+1. [Manejo asincrónico](#manejo-asincrónico)
+1. [Payload de la solicitud](#payload-de-la-solicitud)
+1. [Manejo de errores](#manejo-de-errores)
+1. [Ejemplo completo de controlador](#ejemplo-completo-de-controlador)
+1. [Acerca de los módulos](#acerca-de-los-módulos)
+1. [Enfoque específico de la biblioteca](#enfoque-específico-de-la-biblioteca)
+
+
 Los controladores son responsables de manejar las **solicitudes** entrantes y devolver **respuestas** al cliente.
 
 El propósito de un controlador es recibir solicitudes específicas para la aplicación. El mecanismo de **enrutamiento** controla qué controlador recibe qué solicitudes. Frecuentemente, cada controlador tiene más de una ruta, y diferentes rutas pueden realizar diferentes acciones.
+
+![controladores](https://docs.nestjs.com/assets/Controllers_1.png)
 
 Para crear un controlador básico, usamos clases y **decoradores**. Los decoradores asocian clases con los metadatos necesarios y permiten que Nest cree un mapa de enrutamiento (vinculando solicitudes a los controladores correspondientes).
 
