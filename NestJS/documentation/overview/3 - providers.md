@@ -5,6 +5,7 @@
 1. [Inyección de dependencias](#inyección-de-dependencias)
 1. [Alcances](#alcances)
 1. [Proveedores personalizados](#proveedores-personalizados)
+1. [Proveedores opcionales](#proveedores-opcionales)
 1. [Inyección basada en propiedades](#inyección-basada-en-propiedades)
 1. [Registro de providers](#registro-de-providers)
 1. [Instanciación manual](#instanciación-manual)
