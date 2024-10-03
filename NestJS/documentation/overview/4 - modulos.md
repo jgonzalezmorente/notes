@@ -1,12 +1,14 @@
-### Módulos
-
 ## Índice
+
+1. [Módulos](#módulos)
 1. [Módulos de funcionalidades](#módulos-de-funcionalidades-feature-modules)
 1. [Módulos compartidos](#módulos-compartidos)
 1. [Reexportación de módulos](#reexportación-de-módulos)
 1. [Inyección de dependencias en módulos](#inyección-de-dependencias-en-módulos)
 1. [Módulos globales](#módulos-globales)
 1. [Módulos dinámicos](#módulos-dinámicos)
+
+### Módulos
 
 Un **módulo** es una clase que está anotada con el decorador `@Module()`. El decorador `@Module()` proporciona metadatos que **Nest** utiliza para organizar la estructura de la aplicación.
 

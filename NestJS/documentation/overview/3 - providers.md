@@ -1,6 +1,6 @@
-### Providers
-
 ## Índice
+
+1. [Providers](#providers)
 1. [Servicios](#servicios)
 1. [Inyección de dependencias](#inyección-de-dependencias)
 1. [Alcances](#alcances)
@@ -9,6 +9,9 @@
 1. [Inyección basada en propiedades](#inyección-basada-en-propiedades)
 1. [Registro de providers](#registro-de-providers)
 1. [Instanciación manual](#instanciación-manual)
+
+### Providers
+
 
 Los **providers** son un concepto fundamental en Nest. Muchas de las clases básicas de Nest, como servicios, repositorios, fábricas y helpers, pueden ser tratadas como **providers**. La idea principal de un provider es que puede ser **inyectado** como una dependencia, lo que significa que los objetos pueden establecer diversas relaciones entre sí, y la función de "conectar" estos objetos puede delegarse en gran medida al sistema de ejecución de Nest.
 

@@ -1,6 +1,5 @@
-# Documentación Nest
-
 ## Índice
+
 1. [Primeros pasos](#primeros-pasos)
 1. [Lenguaje](#lenguaje)
 1. [Requisitos previos](#requisitos-previos)

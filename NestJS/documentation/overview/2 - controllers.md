@@ -1,6 +1,6 @@
-### Controladores
-
 ## Índice
+
+1. [Controladores](#controladores)
 1. [Enrutamiento](#enrutamiento)
 1. [Opciones para manipular respuestas](#opciones-para-manipular-respuestas)
 1. [Objeto de solicitud](#objeto-de-solicitud)
@@ -15,6 +15,7 @@
 1. [Acerca de los módulos](#acerca-de-los-módulos)
 1. [Enfoque específico de la biblioteca](#enfoque-específico-de-la-biblioteca)
 
+### Controladores
 
 Los controladores son responsables de manejar las **solicitudes** entrantes y devolver **respuestas** al cliente.
 
