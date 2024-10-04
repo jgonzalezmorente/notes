@@ -2,22 +2,23 @@
 
 ### Índice:
 1. [¿Qué es Docker?](#qué-es-docker)
-2. [Conceptos clave en Docker](#conceptos-clave-en-docker)
+1. [Conceptos clave en Docker](#conceptos-clave-en-docker)
    - [Imágenes](#1-imágenes)
    - [Contenedores](#2-contenedores)
    - [Dockerfile](#3-dockerfile)
    - [Volúmenes](#4-volúmenes)
    - [Redes](#5-redes)
-3. [Comandos básicos de Docker](#comandos-básicos-de-docker)
-4. [Cómo crear un Dockerfile](#cómo-crear-un-dockerfile)
-5. [¿Qué es Docker Compose?](#qué-es-docker-compose)
-6. [Docker Compose: Comandos clave](#docker-compose-comandos-clave)
-7. [Cómo crear un archivo `docker-compose.yml`](#cómo-crear-un-archivo-docker-composeyml)
-8. [Volúmenes en Docker Compose](#volúmenes-en-docker-compose)
-9. [Redes en Docker Compose](#redes-en-docker-compose)
-10. [Ejemplo práctico con Docker Compose, volúmenes y redes](#ejemplo-práctico-con-docker-compose-volúmenes-y-redes)
-11. [Buenas prácticas y consejos](#buenas-prácticas-y-consejos)
-12. [Recursos adicionales](#recursos-adicionales)
+1. [Comandos básicos de Docker](#comandos-básicos-de-docker)
+1. [Cómo crear un Dockerfile](#cómo-crear-un-dockerfile)
+1. [¿Qué es Docker Compose?](#qué-es-docker-compose)
+1. [Docker Compose: Comandos clave](#docker-compose-comandos-clave)
+1. [Cómo crear un archivo `docker-compose.yml`](#cómo-crear-un-archivo-docker-composeyml)
+1. [Volúmenes en Docker Compose](#volúmenes-en-docker-compose)
+1. [Redes en Docker Compose](#redes-en-docker-compose)
+1. [Ejemplo práctico con Docker Compose, volúmenes y redes](#ejemplo-práctico-con-docker-compose-volúmenes-y-redes)
+1. [Buenas prácticas y consejos](#buenas-prácticas-y-consejos)
+1. [Guía para limpiar todo en Docker](#guía-para-limpiar-todo-en-docker)
+1. [Recursos adicionales](#recursos-adicionales)
 
 ---
 
@@ -325,6 +326,72 @@ networks:
 4. **Múltiples archivos de Compose para entornos**: Puedes tener varios archivos `docker-compose.yml` para diferentes entornos (desarrollo, producción) y combinarlos con el comando `-f`.
 
 ---
+
+### Guía para Limpiar Todo en Docker
+
+#### 1. Detener y Eliminar Todos los Contenedores
+
+Primero, necesitas detener todos los contenedores que estén en ejecución y eliminarlos:
+
+```bash
+docker stop $(docker ps -aq)
+docker rm $(docker ps -aq)
+```
+
+- **Explicación**:
+  - `docker ps -aq`: Lista los IDs de todos los contenedores (en ejecución o detenidos).
+  - `docker stop $(docker ps -aq)`: Detiene todos los contenedores en ejecución.
+  - `docker rm $(docker ps -aq)`: Elimina todos los contenedores detenidos.
+
+#### 2. Eliminar Todas las Redes No Predeterminadas
+
+Para asegurarte de que todas las redes que no sean las predeterminadas se eliminen:
+
+```bash
+docker network prune
+```
+
+- **Explicación**:
+  - Este comando elimina todas las redes no utilizadas. Las redes predeterminadas no se verán afectadas.
+
+#### 3. Eliminar Todos los Volúmenes
+
+Para eliminar **todos** los volúmenes, ejecuta el siguiente comando:
+
+```bash
+docker volume rm $(docker volume ls -q)
+```
+
+- **Explicación**:
+  - `docker volume ls -q`: Lista los IDs de todos los volúmenes.
+  - `docker volume rm $(docker volume ls -q)`: Elimina todos los volúmenes listados.
+
+#### 4. Eliminar Imágenes y Caché de Docker
+
+Finalmente, puedes usar el siguiente comando para limpiar todas las imágenes, caché y otros elementos innecesarios:
+
+```bash
+docker system prune -a --volumes
+```
+
+- **Explicación**:
+  - `docker system prune`: Elimina todos los recursos no utilizados (contenedores detenidos, redes no utilizadas, imágenes huérfanas y caché).
+  - `-a`: Elimina todas las imágenes no utilizadas (incluyendo las no huérfanas).
+  - `--volumes`: Elimina todos los volúmenes que no estén en uso.
+
+### Resumen Rápido de Comandos
+
+```bash
+docker stop $(docker ps -aq)
+docker rm $(docker ps -aq)
+docker network prune
+docker volume rm $(docker volume ls -q)
+docker system prune -a --volumes
+```
+
+### Advertencia
+
+Estos comandos eliminarán todos los recursos en Docker, por lo que **asegúrate de que no necesitas conservar ninguna imagen, volumen, contenedor o red antes de ejecutarlos**.
 
 ### **Recursos adicionales**
 
