@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException, Res } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, NotFoundException, Res } from '@nestjs/common';
 import { CatDto, CreateCatDto } from '../dtos';
 import * as createError from 'http-errors';
 import { CustomException, ForbiddenException } from '../../common/exceptions';
@@ -6,8 +6,10 @@ import { CustomException, ForbiddenException } from '../../common/exceptions';
 @Injectable()
 export class CatsService {
 
+    constructor(@Inject('DATABASE_CONNECTION') dbConnection) {
+        console.log(dbConnection);
+    }
     private _baseUrl: string = '';
-
     private readonly cats: CatDto[] = [
         {
             id: 1,
@@ -21,7 +23,6 @@ export class CatsService {
             age: 5,
             breed: 'common'
         }
-
     ];
 
     set baseUrl(url: string) {

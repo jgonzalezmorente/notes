@@ -12,7 +12,6 @@
 
 ### Providers
 
-
 Los **providers** son un concepto fundamental en Nest. Muchas de las clases básicas de Nest, como servicios, repositorios, fábricas y helpers, pueden ser tratadas como **providers**. La idea principal de un provider es que puede ser **inyectado** como una dependencia, lo que significa que los objetos pueden establecer diversas relaciones entre sí, y la función de "conectar" estos objetos puede delegarse en gran medida al sistema de ejecución de Nest.
 
 ![providers](https://docs.nestjs.com/assets/Components_1.png)
@@ -45,7 +44,7 @@ export class CatsService {
 
 > **Sugerencia**: Para crear un servicio utilizando el CLI, simplemente ejecuta el comando `$ nest g service cats`.
 
-Nuestro `CatsService` es una clase básica con una propiedad y dos métodos. Lo nuevo aquí es el uso del decorador `@Injectable()`. Este decorador indica que `CatsService` es una clase que puede ser gestionada por el contenedor de inversión de control (IoC) de Nest. Además, este ejemplo utiliza una interfaz `Cat`, que probablemente se vea de esta forma:
+Nuestro `CatsService` es una clase básica con una propiedad y dos métodos. Lo nuevo aquí es el uso del decorador `@Injectable()`. Este decorador indica que `CatsService` es una clase que puede ser gestionada por el contenedor de inversión de control (IoC) de Nest. Además, este ejemplo utiliza una interfaz `Cat`, que se ve de esta forma:
 
 ```typescript
 export interface Cat {
@@ -80,6 +79,23 @@ export class CatsController {
 ```
 
 El `CatsService` se **inyecta** a través del constructor de la clase. Observa el uso de la sintaxis `private` en el constructor, lo cual nos permite declarar e inicializar el miembro `catsService` en la misma ubicación.
+
+Aquí tienes una nota sintetizada para tus apuntes de Nest.js:
+
+---
+
+### Nota sobre el uso de `@Injectable()` en Nest.js:
+
+- **Clases sin `@Injectable()`**:
+  - Se pueden registrar como providers en el array `providers` de un módulo y ser inyectadas en otras clases (como controladores) **sin problemas**, siempre que no necesiten recibir dependencias.
+  - **Limitación**: Si una clase sin `@Injectable()` intenta recibir dependencias en su constructor (por ejemplo, inyectar otro servicio), Nest.js no gestionará estas dependencias, y se obtendrá `undefined`.
+
+- **Clases con `@Injectable()`**:
+  - Además de ser inyectables en otras clases, pueden recibir dependencias en su constructor. El decorador `@Injectable()` habilita el manejo completo de inyección de dependencias en Nest.js, permitiendo resolver y proveer otros servicios dentro del constructor.
+
+- **Conclusión**: El decorador `@Injectable()` no es solo para hacer una clase inyectable, sino que también permite que esa clase pueda recibir otras dependencias inyectadas.
+
+---
 
 #### Inyección de dependencias
 

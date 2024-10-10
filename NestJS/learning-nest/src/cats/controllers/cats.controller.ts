@@ -1,8 +1,11 @@
 import { Body, Controller, Get, Header, HttpCode, HttpStatus, Param, ParseIntPipe, ParseUUIDPipe, Post, Query, Redirect, Req, Res, UseFilters } from '@nestjs/common';
 import { Response, Request } from 'express';
+import { concatMap, delay, from, Observable, of, tap } from 'rxjs';
 import { CatsService } from '../services';
 import { CatDto, CreateCatDto } from '../dtos';
 import { HttpExceptionFilter } from '../../common/filters';
+import { HttpService } from 'src/common/services';
+import { CustomHttpClient } from 'src/common/common.module';
 
 const esperar = async (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -11,13 +14,20 @@ const esperar = async (ms: number): Promise<void> => new Promise(resolve => setT
 export class CatsController {
 
     constructor(
-        private readonly catsService: CatsService
+        private readonly catsService: CatsService,
+        private readonly httpService: HttpService<CustomHttpClient>
     ) {}
 
     @Get()
     findAll(): CatDto[] {
         return this.catsService.findAll();
     }
+
+     @Get('/client')
+     getClient() {
+        const client = this.httpService.getClient();
+        return client ? client.request() : 'Cliente HTTP no disponible';
+     }
 
     @Get('express')
     findAllExpress(
@@ -58,6 +68,14 @@ export class CatsController {
         });
     }
 
+    @Get('/obs')
+    getObservable(): Observable<number> {
+        return from([1,2,3]).pipe(
+            concatMap(value => of(value).pipe(delay(2000))),
+            tap(console.log),
+        );
+    }
+
     @Get('/error')
     getError() {
         throw Error('Error no HTTP');
@@ -69,6 +87,16 @@ export class CatsController {
     ) {
         return uuid;
     }
+
+    @Get('/passthrough')
+    passthrough(@Res({ passthrough: true }) res: Response) {
+        res.status(HttpStatus.FOUND);
+        return {
+            ok: true,
+            message: 'Obtenido desde passthrough'
+        }
+    }
+
 
     @Get(':id')
     findById(@Param('id', new ParseIntPipe({
@@ -87,4 +115,16 @@ export class CatsController {
     async create(@Body() createCatDto: CreateCatDto) {
         return this.catsService.createCat(createCatDto);
     }
+
+    @Post('/create-express')
+    createExpress(@Res() res: Response) {
+        console.log(res);
+        res.status(HttpStatus.OK).json({
+            created: true,
+            message: 'Creado con express!'
+        });
+    }
+
+
+
 }
