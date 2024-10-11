@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsExtendFilter, AllExceptionsFilter, HttpExceptionFilter } from './filters';
-import { HttpService } from './services';
+import { HttpService, AuthService } from './services';
 
 
 export class CustomHttpClient {
@@ -17,10 +17,12 @@ export class CustomHttpClient {
         // { provide: APP_FILTER, useClass: AllExceptionsFilter },
         { provide: APP_FILTER, useClass: AllExceptionsExtendFilter },
         // { provide: APP_FILTER, useClass: HttpExceptionFilter },
-        HttpService
+        HttpService,
+        AuthService
     ],
     exports: [
-        HttpService
+        HttpService,
+        AuthService,
     ]
 })
 export class CommonModule {}

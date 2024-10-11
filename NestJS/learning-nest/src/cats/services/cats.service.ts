@@ -2,12 +2,23 @@ import { HttpException, HttpStatus, Inject, Injectable, NotFoundException, Res }
 import { CatDto, CreateCatDto } from '../dtos';
 import * as createError from 'http-errors';
 import { CustomException, ForbiddenException } from '../../common/exceptions';
+import { AuthService } from '../../common/services';
+import { TestService } from './test.service';
 
 @Injectable()
 export class CatsService {
 
-    constructor(@Inject('DATABASE_CONNECTION') dbConnection) {
-        console.log(dbConnection);
+    constructor(
+        @Inject('DATABASE_CONNECTION') private readonly dbConnection,
+        private readonly authService: AuthService,
+        private readonly testService: TestService
+    ) {
+        //console.log(this.dbConnection);
+        console.log('*************');
+        console.log('CatsService');
+        console.log(this.authService);
+        console.log(this.testService);
+        console.log('*************');
     }
     private _baseUrl: string = '';
     private readonly cats: CatDto[] = [

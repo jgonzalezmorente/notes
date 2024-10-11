@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { CatsController } from './controllers';
-import { CatsService } from './services';
+import { CatsService, TestService } from './services';
 import { AuthMiddelware, loggerFun, LoggerMiddelware } from './middlewares';
 
 const esperar = async (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -10,7 +10,8 @@ const esperar = async (ms: number): Promise<void> => new Promise(resolve => setT
         CatsController
     ],
     providers: [
-        CatsService
+        CatsService,
+        TestService,
     ],
     imports: [
         // CommonModule
