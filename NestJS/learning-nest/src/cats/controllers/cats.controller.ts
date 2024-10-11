@@ -97,7 +97,6 @@ export class CatsController {
         }
     }
 
-
     @Get('/set-cookie')
     setCookie(@Res() response: Response) {
       response.cookie('token', '123456789', { httpOnly: true, maxAge: 900000 });
