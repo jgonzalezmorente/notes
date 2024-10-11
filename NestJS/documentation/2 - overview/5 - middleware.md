@@ -28,6 +28,28 @@ Los middleware en Nest son, por defecto, equivalentes a los middleware de [expre
   </ul>
 </blockquote>
 
+---
+
+### Nota:
+
+- **Función principal del middleware**: Los middlewares interceptan la solicitud antes de que llegue al controlador y pueden ejecutar varias tareas como:
+  - Modificar la solicitud o respuesta.
+  - Verificar autenticación o autorización.
+  - Validar datos de entrada.
+  - Registrar logs o gestionar excepciones.
+
+- **Finalizar el ciclo de solicitud-respuesta**: Un middleware puede finalizar el ciclo enviando una respuesta directamente con métodos como `res.send()`, `res.json()`, o `res.end()`. Esto es útil en casos como:
+  - **Autenticación fallida**: Por ejemplo, si falta un token de autorización, puede devolver un error 401.
+  - **Validación de datos**: Si los datos de la solicitud no son válidos, puede devolver un error 400.
+  - **Manejo de excepciones**: Para gestionar errores globalmente, evitando que lleguen al controlador.
+  - **Redirecciones**: Un middleware puede redirigir una solicitud a otra ruta.
+
+- **No finalizar el ciclo**: Si el middleware no necesita enviar una respuesta, debe llamar a `next()` para que el control pase al siguiente middleware o al controlador. Por ejemplo, en middlewares de registro de solicitudes o modificación de cabeceras.
+
+- **Responsabilidad del controlador**: En general, los controladores son los responsables principales de gestionar la lógica de negocio y enviar la respuesta al cliente.
+
+---
+
 Puedes implementar middleware personalizado en Nest mediante una función o una clase con un decorador `@Injectable()`. La clase debe implementar la interfaz `NestMiddleware`, mientras que la función no tiene requisitos especiales. Empecemos por implementar una característica de middleware simple utilizando el método basado en clase.
 
 > **Advertencia**: `Express` y `fastify` manejan los middleware de manera diferente y proporcionan diferentes firmas de métodos, puedes leer más al respecto [aquí](/techniques/performance#middleware).
