@@ -30,7 +30,7 @@ Los middleware en Nest son, por defecto, equivalentes a los middleware de [expre
 
 ---
 
-### Nota:
+#### Nota:
 
 - **Función principal del middleware**: Los middlewares interceptan la solicitud antes de que llegue al controlador y pueden ejecutar varias tareas como:
   - Modificar la solicitud o respuesta.
