@@ -16,7 +16,7 @@ export class CustomHttpClient {
     providers: [
         // { provide: 'HTTP_OPTIONS', useClass: CustomHttpClient },
         // { provide: APP_FILTER, useClass: AllExceptionsFilter },
-        { provide: APP_FILTER, useClass: AllExceptionsExtendFilter },
+        // { provide: APP_FILTER, useClass: AllExceptionsExtendFilter },
         // { provide: APP_FILTER, useClass: HttpExceptionFilter },
         HttpService,
         AuthService
@@ -42,7 +42,7 @@ export class CommonModule implements NestModule {
                 console.log('Middlewares configurados');
                 resolve();
 
-            }, 5000);
+            }, 500);
         });
     }
 }

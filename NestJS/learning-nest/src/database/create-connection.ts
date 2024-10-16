@@ -9,6 +9,6 @@ export const createConnection = async ({ entities, ...options }) => {
                 options,
                 query: (sql: string) => `Ejecutando query: ${sql}`
             });
-        }, 2000);
+        }, 200);
     });
 }

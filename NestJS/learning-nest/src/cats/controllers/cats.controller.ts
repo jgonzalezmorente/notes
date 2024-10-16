@@ -6,6 +6,7 @@ import { CatDto, CreateCatDto } from '../dtos';
 import { HttpExceptionFilter } from '../../common/filters';
 import { HttpService } from 'src/common/services';
 import { CustomHttpClient } from 'src/common/common.module';
+import { CustomException } from '../../common/exceptions/custom.exception';
 
 const esperar = async (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -81,6 +82,11 @@ export class CatsController {
         throw Error('Error no HTTP');
     }
 
+    @Get('/custom-error')
+    getCustomError() {
+        throw new CustomException(404, 'CustomError');
+    }
+
     @Get('/uuid/:uuid')
     getUUID(
         @Param('uuid', new ParseUUIDPipe()) uuid: string
@@ -112,8 +118,8 @@ export class CatsController {
     }
 
     @Post()
-    //@UseFilters(new HttpExceptionFilter())
-    //@UseFilters(HttpExceptionFilter)
+    // @UseFilters(new HttpExceptionFilter())
+    @UseFilters(HttpExceptionFilter)
     @HttpCode(202)
     @Header('Custom-Header-Post', 'custom')
     @Header('Cache-Control', 'none')

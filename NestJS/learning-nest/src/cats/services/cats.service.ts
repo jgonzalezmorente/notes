@@ -41,6 +41,8 @@ export class CatsService {
     }
 
     findAll(): CatDto[] {
+        // throw new ForbiddenException();
+        // throw new HttpException('Forbidden', HttpStatus.FORBIDDEN, { cause: Error('Error') });
         // throw createError(404, 'Se ha producido un error');
         // throw new NotFoundException('Algo salio mal', { cause: new Error(), description: 'Algo fue mal'});
         return this.cats;
