@@ -7,7 +7,7 @@
 1. [Exclusión de rutas](#exclusión-de-rutas)
 1. [Middleware funcional](#middleware-funcional)
 1. [Múltiples middleware](#múltiples-middleware)
-1. [Middleware Global](#middleware-global)
+1. [Middleware global](#middleware-global)
 
 ### Middleware
 

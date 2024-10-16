@@ -312,6 +312,19 @@ Este filtro es capaz de manejar cualquier tipo de excepción, no solo las que he
 
 El filtro determina el código de estado HTTP correcto basándose en si la excepción es una instancia de `HttpException`. Si no lo es, asigna un código de estado **500 (Internal Server Error)**. Luego, se construye un cuerpo de respuesta JSON que incluye el código de estado, la marca de tiempo y la ruta de la solicitud.
 
+Aquí tienes una versión sintetizada para agregar a tus apuntes:
+
+---
+
+### Explicación adicional sobre el uso de `httpAdapter`:
+
+El `httpAdapter` permite que el código sea **independiente del framework HTTP** utilizado (como Express o Fastify) al proporcionar una capa de abstracción para manejar las solicitudes y respuestas. Las ventajas clave incluyen:
+
+- **Independencia del framework**: Facilita el cambio entre diferentes frameworks HTTP sin necesidad de modificar el código, ya que `httpAdapter` maneja las diferencias entre ellos.
+- **Abstracción del manejo de solicitudes y respuestas**: Permite usar métodos agnósticos como `httpAdapter.getRequestUrl()` para obtener la URL de la solicitud o `httpAdapter.reply()` para enviar respuestas, evitando código específico del framework.
+- **Facilita la migración**: Si decides cambiar de Express a Fastify, el uso de `httpAdapter` minimiza la necesidad de cambios en el código.
+- **Compatibilidad futura**: Aprovecha la infraestructura interna de Nest.js, garantizando compatibilidad con futuras versiones o nuevos adaptadores de servidor.
+
 #### Advertencia
 
 > **Advertencia:** Cuando se combina un filtro que captura todas las excepciones con otro filtro que está limitado a un tipo específico de excepción, el filtro de "Capturar todo" debe ser declarado primero. Esto garantiza que el filtro específico pueda manejar correctamente el tipo de excepción al que está ligado.
@@ -340,7 +353,7 @@ Este enfoque permite que el filtro personalizado herede la funcionalidad de la c
 
 > **Advertencia**: Los filtros de ámbito de método y de controlador que extienden `BaseExceptionFilter` no deben ser instanciados directamente con `new`. En su lugar, debes permitir que el framework los instancie automáticamente.
 
-### Filtros Globales con Herencia
+### Filtros globales con herencia
 
 Los filtros globales **sí** pueden extender el filtro base. Existen dos maneras principales de hacer esto:
 
