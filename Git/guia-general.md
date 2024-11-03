@@ -15,9 +15,10 @@
    - [Stash](#92-stash)
    - [Cherry-pick](#93-cherry-pick)
    - [Etiquetas (Tags)](#94-etiquetas-tags)
-10. [Buenas Prácticas](#10-buenas-prácticas)
-11. [Recursos Adicionales](#11-recursos-adicionales)
-12. [Conclusión](#12-conclusión)
+10. [Alias en Git](#10-alias-en-git)
+11. [Buenas Prácticas](#10-buenas-prácticas)
+12. [Recursos Adicionales](#11-recursos-adicionales)
+13. [Conclusión](#12-conclusión)
 
 ---
 
@@ -343,7 +344,71 @@ git push origin --tags
 
 ---
 
-## 10. Buenas Prácticas
+## 10. Alias en Git
+
+Los alias en Git permiten simplificar comandos largos o repetitivos, haciéndolos más fáciles de recordar y usar. Puedes configurarlos en el archivo de configuración global para que estén disponibles en todos tus proyectos, o solo en un repositorio específico.
+
+### Crear Alias en Git
+
+1. **Configuración en el Archivo Global:**
+
+   Abre el archivo de configuración global de Git con el siguiente comando:
+   ```bash
+   git config --global -e
+   ```
+
+   Dentro de este archivo, añade tus alias en la sección `[alias]`. Aquí tienes algunos ejemplos comunes:
+
+   ```ini
+   [alias]
+       st = status
+       co = checkout
+       ci = commit
+       br = branch
+       lg = log --oneline --graph --all
+       last = log -1 HEAD
+   ```
+
+2. **Comando Directo para Crear Alias:**
+
+   También puedes agregar alias sin editar el archivo directamente, usando `git config` desde la terminal:
+
+   ```bash
+   git config --global alias.st status
+   git config --global alias.co checkout
+   git config --global alias.ci commit
+   git config --global alias.br branch
+   git config --global alias.lg "log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all"
+   ```
+
+### Usar Alias en Git
+
+Una vez creados los alias, puedes utilizarlos como si fueran comandos normales. Por ejemplo, en lugar de escribir `git status`, puedes usar el alias:
+
+```bash
+git st
+```
+
+### Ejemplo de Configuración Completa
+
+A continuación, se muestra un ejemplo de configuración para alias personalizados en Git:
+
+```ini
+[user]
+    name = jgonzalezmorente
+    email = jgonzalezmorente@gmail.com
+[init]
+    defaultBranch = main
+[alias]
+    s = status --short
+    lg = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+```
+
+Esta configuración define el alias `s` para un estado resumido (`status --short`) y el alias `lg` para un log formateado con color y gráficos para mejorar la visualización del historial.
+
+---
+
+## 11. Buenas Prácticas
 
 - **Commits Atómicos**: Realiza commits que representen cambios pequeños y significativos.
 - **Mensajes Claros**: Usa mensajes descriptivos en tus commits.
@@ -353,7 +418,7 @@ git push origin --tags
 
 ---
 
-## 11. Recursos Adicionales
+## 12. Recursos Adicionales
 
 - **Documentación Oficial de Git**: [git-scm.com/docs](https://git-scm.com/docs)
 - **Pro Git Book** (libro gratuito): [git-scm.com/book/es/v2](https://git-scm.com/book/es/v2)
@@ -364,6 +429,6 @@ git push origin --tags
 
 ---
 
-## 12. Conclusión
+## 13. Conclusión
 
 Git es una herramienta poderosa y esencial para el desarrollo de software moderno. Dominar sus comandos y entender sus conceptos te permitirá colaborar eficientemente y mantener un historial sólido de tus proyectos. Practica regularmente y consulta la documentación para profundizar en funcionalidades más avanzadas.

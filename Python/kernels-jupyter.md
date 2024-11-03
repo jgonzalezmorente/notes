@@ -2,17 +2,16 @@
 
 ### Índice
 
-1. [¿Qué es un Kernel en Jupyter?](#1-¿Qué-es-un-Kernel-en-Jupyter)
-2. [¿Para qué se usa un Kernel?](#2-¿Para-qué-se-usa-un-Kernel)
-3. [¿Cómo se crean los Kernels?](#3-¿Cómo-se-crean-los-Kernels)
-   - [Pasos para crear un Kernel](#pasos-para-crear-un-Kernel)
-4. [¿Cómo se listan los Kernels en Jupyter?](#4-¿Cómo-se-listan-los-Kernels-en-Jupyter)
-5. [¿Cómo se eliminan los Kernels en Jupyter?](#5-¿Cómo-se-eliminan-los-Kernels-en-Jupyter)
-6. [Ejemplos avanzados y Tips adicionales](#6-Ejemplos-avanzados-y-Tips-adicionales)
-   - [Renombrar un Kernel](#Renombrar-un-Kernel)
-   - [Actualizar o Reinstalar un Kernel](#Actualizar-o-Reinstalar-un-Kernel)
-   - [Evitar la Detección Automática de Kernels](#Evitar-la-Detección-Automática-de-Kernels)
-7. [Resumen](#7-Resumen)
+1. [¿Qué es un Kernel en Jupyter?](#1-qué-es-un-kernel-en-jupyter)
+2. [¿Para qué se usa un Kernel?](#2-para-qué-se-usa-un-kernel)
+3. [¿Cómo se crean los Kernels?](#3-cómo-se-crean-los-kernels)
+   - [Pasos para crear un Kernel](#pasos-para-crear-un-kernel)
+4. [¿Cómo se listan los Kernels en Jupyter?](#4-cómo-se-listan-los-kernels-en-jupyter)
+5. [¿Cómo se eliminan los Kernels en Jupyter?](#5-cómo-se-eliminan-los-kernels-en-jupyter)
+6. [Ejemplos avanzados y Tips adicionales](#6-ejemplos-avanzados-y-tips-adicionales)
+   - [Renombrar un Kernel](#renombrar-un-kernel)
+   - [Actualizar o Reinstalar un Kernel](#actualizar-o-reinstalar-un-kernel)
+7. [Resumen](#7-resumen)
 
 ---
 
