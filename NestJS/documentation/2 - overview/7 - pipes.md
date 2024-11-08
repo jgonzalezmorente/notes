@@ -28,11 +28,11 @@ Los pipes tienen dos casos de uso típicos:
 - **Transformación**: transformar los datos de entrada a la forma deseada (por ejemplo, de cadena a entero).
 - **Validación**: evaluar los datos de entrada y, si son válidos, simplemente pasarlos sin cambios; de lo contrario, lanzar una excepción.
 
-En ambos casos, los pipes operan sobre los `argumentos` que están siendo procesados por un [manejador de rutas del controlador](controllers#route-parameters). Nest interpone un pipe justo antes de que se invoque un método, y el pipe recibe los argumentos destinados al método y opera sobre ellos. Cualquier operación de transformación o validación ocurre en ese momento, después de lo cual se invoca el manejador de rutas con los argumentos (potencialmente) transformados.
+En ambos casos, los pipes operan sobre los `argumentos` que están siendo procesados por un [manejador de rutas del controlador](https://docs.nestjs.com/controllers#route-parameters). Nest interpone un pipe justo antes de que se invoque un método, y el pipe recibe los argumentos destinados al método y opera sobre ellos. Cualquier operación de transformación o validación ocurre en ese momento, después de lo cual se invoca el manejador de rutas con los argumentos (potencialmente) transformados.
 
 Nest viene con varios pipes integrados que se pueden usar directamente. También puedes construir tus propios pipes personalizados. En este capítulo, presentaremos los pipes integrados y mostraremos cómo vincularlos a los manejadores de rutas. Luego, examinaremos varios pipes personalizados para mostrar cómo se puede construir uno desde cero.
 
-> **Sugerencia**: Los pipes se ejecutan dentro de la zona de excepciones. Esto significa que cuando un Pipe lanza una excepción, esta es manejada por la capa de excepciones (filtro global de excepciones y cualquier [filtro de excepciones](/exception-filters) que se aplique al contexto actual). Dado lo anterior, debería quedar claro que cuando se lanza una excepción en un Pipe, no se ejecuta ningún método del controlador. Esto proporciona una técnica de mejores prácticas para validar los datos que ingresan a la aplicación desde fuentes externas en el límite del sistema.
+> **Sugerencia**: Los pipes se ejecutan dentro de la zona de excepciones. Esto significa que cuando un Pipe lanza una excepción, esta es manejada por la capa de excepciones (filtro global de excepciones y cualquier [filtro de excepciones](https://docs.nestjs.com/exception-filters) que se aplique al contexto actual). Dado lo anterior, debería quedar claro que cuando se lanza una excepción en un Pipe, no se ejecuta ningún método del controlador. Esto proporciona una técnica recomendada para validar los datos que ingresan a la aplicación desde fuentes externas justo en el punto de entrada al sistema.
 
 ### Pipes integrados
 
@@ -109,12 +109,13 @@ async findOne(@Query('id', ParseIntPipe) id: number) {
 Aquí hay un ejemplo de uso de `ParseUUIDPipe` para analizar un parámetro de cadena y validar si es un UUID.
 
 ```typescript
-@@filename()
 @Get(':uuid')
 async findOne(@Param('uuid', new ParseUUIDPipe()) uuid: string) {
   return this.catsService.findOne(uuid);
 }
-@@switch
+
+o equivalentemente
+
 @Get(':uuid')
 @Bind(Param('uuid', new ParseUUIDPipe()))
 async findOne(uuid) {
@@ -126,7 +127,7 @@ async findOne(uuid) {
 
 Arriba hemos visto ejemplos de cómo vincular varios pipes de la familia `Parse*` integrados. La vinculación de pipes de validación es un poco diferente; lo discutiremos en la siguiente sección.
 
-> **Sugerencia**: Consulta también [Técnicas de validación](/techniques/validation) para ejemplos extensos de pipes de validación.
+> **Sugerencia**: Consulta también [Técnicas de validación](https://docs.nestjs.com/techniques/validation) para ejemplos extensos de pipes de validación.
 
 ### Pipes personalizados
 

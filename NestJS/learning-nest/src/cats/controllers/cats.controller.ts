@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Header, HttpCode, HttpStatus, Param, ParseIntPipe, ParseUUIDPipe, Post, Query, Redirect, Req, Res, UseFilters } from '@nestjs/common';
+import { Bind, Body, Controller, Get, Header, HttpCode, HttpStatus, Param, ParseIntPipe, ParseUUIDPipe, Post, Query, Redirect, Req, Res, UseFilters } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { concatMap, delay, from, Observable, of, tap } from 'rxjs';
 import { CatsService } from '../services';
@@ -87,12 +87,19 @@ export class CatsController {
         throw new CustomException(404, 'CustomError');
     }
 
+    // @Get('/uuid/:uuid')
+    // getUUID(
+    //     @Param('uuid', new ParseUUIDPipe()) uuid: string
+    // ) {
+    //     return uuid;
+    // }
+
     @Get('/uuid/:uuid')
-    getUUID(
-        @Param('uuid', new ParseUUIDPipe()) uuid: string
-    ) {
+    @Bind(Param('uuid', ParseUUIDPipe))
+    getUUId(uuid: string) {
         return uuid;
     }
+
 
     @Get('/passthrough')
     passthrough(@Res({ passthrough: true }) res: Response) {
