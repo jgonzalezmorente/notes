@@ -50,7 +50,7 @@ Nest viene con nueve pipes disponibles directamente:
 
 Estos pipes se exportan desde el paquete `@nestjs/common`.
 
-Echemos un vistazo rápido a `ParseIntPipe`. Este es un ejemplo del caso de uso de **transformación**, donde el pipe asegura que un parámetro del manejador de métodos se convierta en un entero de JavaScript (o lanza una excepción si la conversión falla). Más adelante en este capítulo, mostraremos una implementación simple personalizada de un `ParseIntPipe`. Las técnicas de ejemplo a continuación también se aplican a los otros pipes de transformación integrados (`ParseBoolPipe`, `ParseFloatPipe`, `ParseEnumPipe`, `ParseArrayPipe` y `ParseUUIDPipe`, a los que nos referiremos como los pipes `Parse*` en este capítulo).
+Echemos un vistazo rápido a `ParseIntPipe`. Este es un ejemplo del caso de uso de **transformación**, donde el pipe asegura que un parámetro del manejador de métodos se convierta en un entero de JavaScript (o lanza una excepción si la conversión falla). Más adelante en este capítulo, mostraremos una implementación simple personalizada de un `ParseIntPipe`. En los siguientes ejemplos, mostraremos técnicas aplicables a los otros pipes de transformación integrados (`ParseBoolPipe`, `ParseFloatPipe`, `ParseEnumPipe`, `ParseArrayPipe` y `ParseUUIDPipe`, a los que nos referiremos como los pipes `Parse*` en este capítulo).
 
 ### Vinculación de pipes
 
