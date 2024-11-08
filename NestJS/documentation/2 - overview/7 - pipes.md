@@ -113,9 +113,11 @@ Aquí hay un ejemplo de uso de `ParseUUIDPipe` para analizar un parámetro de ca
 async findOne(@Param('uuid', new ParseUUIDPipe()) uuid: string) {
   return this.catsService.findOne(uuid);
 }
+```
 
 o equivalentemente
 
+```
 @Get(':uuid')
 @Bind(Param('uuid', new ParseUUIDPipe()))
 async findOne(uuid) {
