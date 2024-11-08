@@ -117,7 +117,7 @@ async findOne(@Param('uuid', new ParseUUIDPipe()) uuid: string) {
 
 o equivalentemente
 
-```
+```typescript
 @Get(':uuid')
 @Bind(Param('uuid', new ParseUUIDPipe()))
 async findOne(uuid) {
