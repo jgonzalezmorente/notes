@@ -138,21 +138,11 @@ Como se mencionó, puedes construir tus propios pipes personalizados. Aunque Nes
 Comenzamos con un simple `ValidationPipe`. Inicialmente, simplemente tomará un valor de entrada y devolverá el mismo valor de inmediato, comportándose como una función de identidad.
 
 ```typescript
-@@filename(validation.pipe)
 import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
 
 @Injectable()
 export class ValidationPipe implements PipeTransform {
   transform(value: any, metadata: ArgumentMetadata) {
-    return value;
-  }
-}
-@@switch
-import { Injectable } from '@nestjs/common';
-
-@Injectable()
-export class ValidationPipe {
-  transform(value, metadata) {
     return value;
   }
 }
