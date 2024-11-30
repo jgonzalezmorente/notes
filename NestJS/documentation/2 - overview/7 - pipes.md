@@ -399,7 +399,6 @@ Los pipes de ámbito de parámetro son útiles cuando la lógica de validación 
 Dado que el `ValidationPipe` fue creado para ser lo más genérico posible, podemos aprovechar su utilidad configurándolo como un pipe de **ámbito global** para que se aplique a cada manejador de rutas en toda la aplicación.
 
 ```typescript
-@@filename(main)
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
@@ -408,7 +407,7 @@ async function bootstrap() {
 bootstrap();
 ```
 
-> **Aviso**: En el caso de [aplicaciones híbridas](faq/hybrid-application), el método `useGlobalPipes()` no configura pipes para gateways y microservicios. Para aplicaciones de microservicios "estándar" (no híbridas), `useGlobalPipes()` monta los pipes a nivel global.
+> **Aviso**: En el caso de [aplicaciones híbridas](https://docs.nestjs.com/faq/hybrid-application), el método `useGlobalPipes()` no configura pipes para gateways y microservicios. Para aplicaciones de microservicios "estándar" (no híbridas), `useGlobalPipes()` monta los pipes a nivel global.
 
 Los pipes globales se usan en toda la aplicación, para cada controlador y cada manejador de rutas.
 
@@ -430,11 +429,11 @@ import { APP_PIPE } from '@nestjs/core';
 export class AppModule {}
 ```
 
-> **Sugerencia**: Cuando uses este enfoque para realizar la inyección de dependencias para el pipe, ten en cuenta que, independientemente del módulo donde se emplee esta construcción, el pipe es, de hecho, global. ¿Dónde debería hacerse esto? Elige el módulo donde se define el pipe (`ValidationPipe` en el ejemplo anterior). Además, `useClass` no es la única forma de gestionar el registro de proveedores personalizados. Aprende más [aquí](/fundamentals/custom-providers).
+> **Sugerencia**: Cuando uses este enfoque para realizar la inyección de dependencias para el pipe, ten en cuenta que, independientemente del módulo donde se emplee esta construcción, el pipe es, de hecho, global. ¿Dónde debería hacerse esto? Elige el módulo donde se define el pipe (`ValidationPipe` en el ejemplo anterior). Además, `useClass` no es la única forma de gestionar el registro de proveedores personalizados. Aprende más [aquí](https://docs.nestjs.com/fundamentals/custom-providers).
 
 ### El ValidationPipe integrado
 
-Como recordatorio, no necesitas construir un pipe de validación genérico por tu cuenta, ya que el `ValidationPipe` está disponible de forma predeterminada en Nest. El `ValidationPipe` integrado ofrece más opciones que el ejemplo que construimos en este capítulo, el cual se ha mantenido básico para ilustrar la mecánica de un pipe personalizado. Puedes encontrar todos los detalles, junto con muchos ejemplos, [aquí](/techniques/validation).
+Como recordatorio, no necesitas construir un pipe de validación genérico por tu cuenta, ya que el `ValidationPipe` está disponible de forma predeterminada en Nest. El `ValidationPipe` integrado ofrece más opciones que el ejemplo que construimos en este capítulo, el cual se ha mantenido básico para ilustrar la mecánica de un pipe personalizado. Puedes encontrar todos los detalles, junto con muchos ejemplos, [aquí](https://docs.nestjs.com/techniques/validation).
 
 ### Caso de uso de transformación
 
@@ -445,7 +444,6 @@ La validación no es el único caso de uso para pipes personalizados. Al comienz
 Aquí hay un simple `ParseIntPipe`, que se encarga de convertir una cadena en un valor entero. (Como se mencionó anteriormente, Nest tiene un `ParseIntPipe` integrado que es más sofisticado; incluimos este como un ejemplo simple de un pipe de transformación personalizado).
 
 ```typescript
-@@filename(parse-int.pipe)
 import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common';
 
 @Injectable()
@@ -458,33 +456,13 @@ export class ParseIntPipe implements PipeTransform<string, number> {
     return val;
   }
 }
-@@switch
-import { Injectable, BadRequestException } from '@nestjs/common';
-
-@Injectable()
-export class ParseIntPipe {
-  transform(value, metadata) {
-    const val = parseInt(value, 10);
-    if (isNaN(val)) {
-      throw new BadRequestException('Validation failed');
-    }
-    return val;
-  }
-}
 ```
 
 Podemos entonces vincular este pipe al parámetro seleccionado como se muestra a continuación:
 
 ```typescript
-@@filename()
 @Get(':id')
 async findOne(@Param('id', new ParseIntPipe()) id) {
-  return this.catsService.findOne(id);
-}
-@@switch
-@Get(':id')
-@Bind(Param('id', new ParseIntPipe()))
-async findOne(id) {
   return this.catsService.findOne(id);
 }
 ```
@@ -492,15 +470,8 @@ async findOne(id) {
 Otro caso útil de transformación sería seleccionar una **entidad de usuario existente** de la base de datos usando un id proporcionado en la solicitud:
 
 ```typescript
-@@filename()
 @Get(':id')
 findOne(@Param('id', UserByIdPipe) userEntity: UserEntity) {
-  return userEntity;
-}
-@@switch
-@Get(':id')
-@Bind(Param('id', UserByIdPipe))
-findOne(userEntity) {
   return userEntity;
 }
 ```
@@ -512,7 +483,6 @@ Dejamos la implementación de este pipe al lector, pero observa que, al igual qu
 Los pipes `Parse*` esperan que el valor de un parámetro esté definido. Lanzan una excepción al recibir valores `null` o `undefined`. Para permitir que un endpoint maneje valores de parámetros de cadena de consulta faltantes, debemos proporcionar un valor predeterminado que se inyecte antes de que los pipes `Parse*` operen sobre estos valores. El `DefaultValuePipe` sirve para este propósito. Simplemente instancia un `DefaultValuePipe` en el decorador `@Query()` antes del pipe `Parse*` correspondiente, como se muestra a continuación:
 
 ```typescript
-@@filename()
 @Get()
 async findAll(
   @Query('activeOnly', new DefaultValuePipe(false), ParseBoolPipe) activeOnly: boolean,

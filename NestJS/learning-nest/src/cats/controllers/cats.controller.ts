@@ -1,4 +1,4 @@
-import { Bind, Body, Controller, Get, Header, HttpCode, HttpStatus, Param, ParseIntPipe, ParseUUIDPipe, Post, Query, Redirect, Req, Res, UseFilters, UsePipes } from '@nestjs/common';
+import { Bind, Body, Controller, DefaultValuePipe, Get, Header, HttpCode, HttpStatus, Param, ParseBoolPipe, ParseUUIDPipe, Post, Query, Redirect, Req, Res, UseFilters, UsePipes } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { concatMap, delay, from, Observable, of, tap } from 'rxjs';
 import { CatsService } from '../services';
@@ -7,7 +7,7 @@ import { HttpExceptionFilter } from '../../common/filters';
 import { HttpService } from 'src/common/services';
 import { CustomHttpClient } from 'src/common/common.module';
 import { CustomException } from '../../common/exceptions/custom.exception';
-import { ValidationPipe, ZodValidationPipe } from '../../common/pipes';
+import { ValidationPipe, ZodValidationPipe, ParseIntPipe } from '../../common/pipes';
 
 const esperar = async (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -21,7 +21,12 @@ export class CatsController {
     ) {}
 
     @Get()
-    findAll(): CatDto[] {
+    findAll(
+        @Query('activeOnly', new DefaultValuePipe(false), ParseBoolPipe) activeOnly: boolean,
+        @Query('page', new DefaultValuePipe(0), ParseIntPipe) page: number,
+
+    ): CatDto[] {
+        console.log({activeOnly, page});
         return this.catsService.findAll();
     }
 
@@ -58,13 +63,13 @@ export class CatsController {
     }
 
     @Get('/async')
-    async getAsync(@Query('id', new ParseIntPipe({ optional: true })) id?: number): Promise<CatDto[]> {
+    async getAsync(@Query('id', new ParseIntPipe()) id?: number): Promise<CatDto[]> {
         // await esperar(2000);
         // return this.findAll();
         return new Promise((resolve, reject) => {
             console.log('Código síncrono');
             setTimeout(() => {
-                const cats = this.findAll();
+                const cats = this.findAll(false, 0);
                 return resolve(cats);
             }, 3000)
         });
@@ -118,9 +123,7 @@ export class CatsController {
     }
 
     @Get(':id')
-    findById(@Param('id', new ParseIntPipe({
-        errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE
-    })) id: number) {
+    findById(@Param('id', new ParseIntPipe()) id: number) {
         console.log({id, type: typeof id });
         return this.catsService.findById(id);
     }
@@ -132,7 +135,7 @@ export class CatsController {
     @HttpCode(202)
     @Header('Custom-Header-Post', 'custom')
     @Header('Cache-Control', 'none')
-    async create(@Body(new ValidationPipe()) createCatDto: CreateCatDto) {
+    async create(@Body() createCatDto: CreateCatDto) {
         return this.catsService.createCat(createCatDto);
     }
 

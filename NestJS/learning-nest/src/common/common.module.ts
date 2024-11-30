@@ -3,7 +3,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsExtendFilter, AllExceptionsFilter, HttpExceptionFilter } from './filters';
 import { HttpService, AuthService } from './services';
 import { LoggerMiddelware, AuthMiddelware, loggerFun } from './middlewares';
-import { ValidationPipe, ZodValidationPipe } from './pipes';
+import { ValidationPipe, ZodValidationPipe, ParseIntPipe } from './pipes';
 
 const esperar = async (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
 export class CustomHttpClient {
@@ -22,11 +22,13 @@ export class CustomHttpClient {
         HttpService,
         AuthService,
         ValidationPipe,
+        ParseIntPipe,
     ],
     exports: [
         HttpService,
         AuthService,
         ValidationPipe,
+        ParseIntPipe
     ]
 })
 export class CommonModule implements NestModule {
