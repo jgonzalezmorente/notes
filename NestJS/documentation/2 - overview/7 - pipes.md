@@ -176,7 +176,7 @@ Estas propiedades describen el argumento que se está procesando actualmente.
       <code>@Body()</code>, consulta
       <code>@Query()</code>, parámetro
       <code>@Param()</code> o un parámetro personalizado (lee más
-      <a routerLink="/custom-decorators">aquí</a>).</td>
+      <a routerLink="https://docs.nestjs.com/custom-decorators">aquí</a>).</td>
   </tr>
   <tr>
     <td>
@@ -205,14 +205,8 @@ Estas propiedades describen el argumento que se está procesando actualmente.
 Hagamos que nuestro `ValidationPipe` sea un poco más útil. Observemos más de cerca el método `create()` del `CatsController`, donde probablemente quisiéramos asegurarnos de que el objeto del cuerpo del post sea válido antes de intentar ejecutar nuestro método de servicio.
 
 ```typescript
-@@filename()
 @Post()
 async create(@Body() createCatDto: CreateCatDto) {
-  this.catsService.create(createCatDto);
-}
-@@switch
-@Post()
-async create(@Body() createCatDto) {
   this.catsService.create(createCatDto);
 }
 ```
@@ -220,7 +214,6 @@ async create(@Body() createCatDto) {
 Centrémonos en el parámetro `createCatDto` del cuerpo. Su tipo es `CreateCatDto`:
 
 ```typescript
-@@filename(create-cat.dto)
 export class CreateCatDto {
   name: string;
   age: number;
@@ -235,8 +228,6 @@ Otro enfoque podría ser crear una **clase validadora** y delegar la tarea allí
 ¿Qué tal crear un middleware de validación? Esto podría funcionar, pero lamentablemente no es posible crear un **middleware genérico** que pueda ser utilizado en todos los contextos en toda la aplicación. Esto se debe a que el middleware no conoce el **contexto de ejecución**, incluyendo el manejador que será llamado y cualquiera de sus parámetros.
 
 Este es, por supuesto, exactamente el caso de uso para el cual están diseñados los pipes. Así que vamos a refinar nuestro `ValidationPipe`.
-
-<app-banner-courses></app-banner-courses>
 
 ### Validación de esquemas de objetos
 
@@ -257,7 +248,6 @@ Como se mencionó antes, un **validation pipe** devuelve el valor sin cambios o 
 En la siguiente sección, verás cómo proporcionamos el esquema apropiado para un método del controlador usando el decorador `@UsePipes()`. Hacer esto hace que nuestro pipe de validación sea reutilizable en varios contextos, tal como nos propusimos hacer.
 
 ```typescript
-@@filename()
 import { PipeTransform, ArgumentMetadata, BadRequestException } from '@nestjs/common';
 import { ZodSchema  } from 'zod';
 
@@ -265,21 +255,6 @@ export class ZodValidationPipe implements PipeTransform {
   constructor(private schema: ZodSchema) {}
 
   transform(value: unknown, metadata: ArgumentMetadata) {
-    try {
-      const parsedValue = this.schema.parse(value);
-      return parsedValue;
-    } catch (error) {
-      throw new BadRequestException('Validation failed');
-    }
-  }
-}
-@@switch
-import { BadRequestException } from '@nestjs/common';
-
-export class ZodValidationPipe {
-  constructor(private schema) {}
-
-  transform(value, metadata) {
     try {
       const parsedValue = this.schema.parse(value);
       return parsedValue;
@@ -321,17 +296,9 @@ export type CreateCatDto = z.infer<typeof createCatSchema>;
 Hacemos esto usando el decorador `@UsePipes()` como se muestra a continuación:
 
 ```typescript
-@@filename(cats.controller)
 @Post()
 @UsePipes(new ZodValidationPipe(createCatSchema))
 async create(@Body() createCatDto: CreateCatDto) {
-  this.catsService.create(createCatDto);
-}
-@@switch
-@Post()
-@Bind(Body())
-@UsePipes(new ZodValidationPipe(createCatSchema))
-async create(createCatDto) {
   this.catsService.create(createCatDto);
 }
 ```
@@ -355,7 +322,6 @@ $ npm i --save class-validator class-transformer
 Una vez instalados, podemos agregar algunos decoradores a la clase `CreateCatDto`. Aquí vemos una ventaja significativa de esta técnica: la clase `CreateCatDto` sigue siendo la única fuente de verdad para nuestro objeto del cuerpo del post (en lugar de tener que crear una clase de validación separada).
 
 ```typescript
-@@filename(create-cat.dto)
 import { IsString, IsInt } from 'class-validator';
 
 export class CreateCatDto {
@@ -375,7 +341,6 @@ export class CreateCatDto {
 Ahora podemos crear una clase `ValidationPipe` que use estas anotaciones.
 
 ```typescript
-@@filename(validation.pipe)
 import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common';
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
@@ -419,7 +384,6 @@ El último paso es vincular el `ValidationPipe`. Los pipes pueden ser de ámbito
 En el ejemplo a continuación, vincularemos la instancia del pipe al decorador `@Body()` del manejador de rutas para que nuestro pipe sea llamado para validar el cuerpo del post.
 
 ```typescript
-@@filename(cats.controller)
 @Post()
 async create(
   @Body(new ValidationPipe()) createCatDto: CreateCatDto,
