@@ -162,15 +162,11 @@ En lugar de iniciar manualmente cada contenedor, puedes orquestar todos los serv
    docker-compose build
    ```
 
-Por supuesto, aquí tienes la sección sin iconos:
-
----
-
 ### **Levantar y reconstruir un solo contenedor con Docker Compose**
 
 Cuando tienes varios servicios definidos en `docker-compose.yml` y quieres reconstruir y levantar solo uno, sin afectar los demás que ya están en ejecución, puedes hacerlo fácilmente.
 
-#### Sintaxis:
+#### Levantar y reconstruir solo un servicio:
 
 ```bash
 docker-compose up --build -d nombre_servicio
@@ -182,15 +178,32 @@ O con la nueva sintaxis:
 docker compose up --build -d nombre_servicio
 ```
 
-Esto hará lo siguiente:
+Esto hace lo siguiente:
 
-* Reconstruye solo la imagen del servicio especificado (si hay cambios en el `Dockerfile` o código).
-* Levanta ese contenedor (deteniéndolo y reemplazándolo si ya estaba corriendo).
-* No afecta al resto de servicios que ya están en ejecución.
+* Reconstruye la imagen del servicio si hay cambios.
+* Levanta ese servicio (lo reemplaza si ya está corriendo).
+* No afecta al resto de servicios en ejecución.
 
 #### Nota
 
 No es necesario detener el contenedor manualmente. Docker Compose se encarga de reemplazarlo si es necesario.
+
+#### Forzar recreación de un servicio (aunque no haya cambios en la imagen):
+
+```bash
+docker-compose up -d --force-recreate nombre_servicio
+```
+
+Este comando:
+
+* Elimina y vuelve a crear el contenedor, aunque no haya cambios.
+* Es útil cuando necesitas limpiar el estado interno del contenedor (por ejemplo, variables de entorno, volúmenes temporales, etc.).
+
+#### Forzar recreación de todos los servicios:
+
+```bash
+docker-compose up -d --force-recreate
+```
 
 #### Para hacer solo `build`:
 
