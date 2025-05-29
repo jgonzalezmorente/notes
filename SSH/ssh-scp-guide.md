@@ -1,22 +1,22 @@
-# SSH and SCP Guide
+# Guía de SSH y SCP
 
-## 1. Introduction to SSH
+## 1. Introducción a SSH
 
-SSH (*Secure Shell*) is a protocol that allows secure remote connections to a server over an insecure network.
+SSH (*Secure Shell*) es un protocolo que permite establecer conexiones remotas seguras a un servidor a través de una red no segura.
 
-The basic command to connect to a server is:
-
-```bash
-ssh user@server
-```
-
-If the server uses a port other than the default (22), specify the port:
+El comando básico para conectarse a un servidor es:
 
 ```bash
-ssh user@server -p 2222
+ssh usuario@servidor
 ```
 
-To exit an SSH session, use:
+Si el servidor utiliza un puerto diferente al predeterminado (22), puedes especificarlo así:
+
+```bash
+ssh usuario@servidor -p 2222
+```
+
+Para salir de una sesión SSH:
 
 ```bash
 exit
@@ -24,152 +24,197 @@ exit
 
 ---
 
-## 2. Generating a Key Pair for Passwordless Authentication
+## 2. Generación de un par de claves para autenticación sin contraseña
 
-SSH key-based authentication allows connections without entering passwords. This is achieved through a pair of keys: a **public key** and a **private key**.
+La autenticación con clave SSH permite conectarse sin tener que escribir una contraseña, utilizando un par de claves: una **clave pública** y una **clave privada**.
 
-### 2.1 Generating the Key Pair
+### 2.1 Generar el par de claves
 
-Run the following command on your local machine:
-
-```bash
-ssh-keygen -t rsa -b 4096 -C "comment"
-```
-
-- `-t rsa` specifies the key type (RSA in this case).
-- `-b 4096` defines the key size in bits.
-- `-C "comment"` is optional and is used to identify the key (it can be an email or a description).
-
-This command generates two files in `~/.ssh/`:
-
-- `id_rsa` (private key, **do not share or expose**).
-- `id_rsa.pub` (public key, copied to the server).
-
-### 2.2 Copying the Public Key to the Server
-
-To authorize passwordless connections, the public key must be added to the `~/.ssh/authorized_keys` file on the server.
-
-#### Using `ssh-copy-id` (Easy Method)
+Ejecuta este comando en tu máquina local:
 
 ```bash
-ssh-copy-id user@server
+ssh-keygen -t rsa -b 4096 -C "comentario"
 ```
 
-If the port is not 22:
+* `-t rsa`: tipo de clave (RSA en este caso).
+* `-b 4096`: tamaño en bits.
+* `-C "comentario"`: opcional, sirve para identificar la clave (puede ser un correo o una descripción).
+
+Esto generará dos archivos en `~/.ssh/`:
+
+* `id_rsa` (clave privada, **no debes compartirla**).
+* `id_rsa.pub` (clave pública, que se copia al servidor).
+
+### 2.2 Copiar la clave pública al servidor
+
+Para autorizar conexiones sin contraseña, debes copiar la clave pública al archivo `~/.ssh/authorized_keys` del servidor.
+
+#### Usando `ssh-copy-id` (forma fácil)
 
 ```bash
-ssh-copy-id -p 2222 user@server
+ssh-copy-id usuario@servidor
 ```
 
-#### Manually (If `ssh-copy-id` is Unavailable)
-
-Manually copy the public key to the server:
+Si usas un puerto diferente:
 
 ```bash
-cat ~/.ssh/id_rsa.pub | ssh user@server "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+ssh-copy-id -p 2222 usuario@servidor
 ```
 
-Verify the permissions on the server:
+#### Manualmente (si no tienes `ssh-copy-id`)
+
+```bash
+cat ~/.ssh/id_rsa.pub | ssh usuario@servidor "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+```
+
+Verifica los permisos en el servidor:
 
 ```bash
 chmod 700 ~/.ssh
 chmod 600 ~/.ssh/authorized_keys
 ```
 
-Now you can connect without a password:
+Ahora podrás conectarte sin contraseña:
 
 ```bash
-ssh user@server
+ssh usuario@servidor
 ```
 
 ---
 
-## 3. File Transfer with SCP
+## 3. Transferencia de archivos con SCP
 
-SCP (*Secure Copy Protocol*) allows copying files between your machine and a remote server.
+SCP (*Secure Copy Protocol*) permite copiar archivos entre tu máquina local y un servidor remoto de forma segura.
 
-### 3.1 Copying a File to the Server
-
-```bash
-scp file.txt user@server:/destination/path/
-```
-
-If the server uses a different port:
+### 3.1 Copiar un archivo **al servidor**
 
 ```bash
-scp -P 2222 file.txt user@server:/destination/path/
+scp archivo.txt usuario@servidor:/ruta/destino/
 ```
 
-### 3.2 Copying a File from the Server to Your Local Machine
+Si el servidor usa otro puerto:
 
 ```bash
-scp user@server:/remote/path/file.txt ./
+scp -P 2222 archivo.txt usuario@servidor:/ruta/destino/
 ```
 
-### 3.3 Copying an Entire Directory
-
-To copy a directory recursively, use `-r`:
+### 3.2 Copiar un archivo **desde el servidor a tu máquina local**
 
 ```bash
-scp -r directory user@server:/destination/path/
+scp usuario@servidor:/ruta/remota/archivo.txt ./
 ```
 
-To download a directory:
+### 3.3 Copiar un directorio completo
+
+Para subir un directorio de forma recursiva:
 
 ```bash
-scp -r user@server:/remote/path/directory ./
+scp -r directorio usuario@servidor:/ruta/destino/
 ```
 
----
+Para descargarlo:
 
-## 4. How SSH Key Authentication Works Internally
+```bash
+scp -r usuario@servidor:/ruta/remota/directorio ./
+```
 
-SSH public and private key authentication is based on asymmetric cryptography.
+### 3.4 Usar alias definidos en `~/.ssh/config`
 
-1. **Generating the Key Pair**
-   - The private key (`id_rsa`) remains secure on the local machine.
-   - The public key (`id_rsa.pub`) is stored on the server inside `~/.ssh/authorized_keys`.
-
-2. **Connection Process**
-   - When a client attempts to connect, the server checks `~/.ssh/authorized_keys` for a matching key.
-   - The server sends an encrypted challenge using the public key.
-   - The client responds with a code signed with its private key.
-   - If the server can verify the signature using the public key, access is granted.
-
-This process ensures that only those with the private key can authenticate.
-
----
-
-## 5. Advanced Configuration
-
-### 5.1 Configuration File for Quick Access
-
-To simplify the connection, you can configure an alias in `~/.ssh/config`:
+Si has configurado un alias en `~/.ssh/config` como este:
 
 ```ini
-Host my-server
-    HostName server.com
-    User user
+Host midestino
+  HostName 192.168.1.10
+  User jose
+  IdentityFile ~/.ssh/id_rsa
+```
+
+Puedes usarlo directamente con `scp`:
+
+```bash
+scp midestino:/ruta/remota/archivo.txt ./
+```
+
+O para copiar carpetas:
+
+```bash
+scp -r midestino:/ruta/remota/carpeta ./carpeta_local/
+```
+
+### 3.5 Descargar directamente al Escritorio de Windows desde WSL
+
+Si estás usando **Ubuntu en Windows (WSL)**, puedes acceder a tu escritorio con:
+
+```bash
+/mnt/c/Users/TU_USUARIO/Desktop/
+```
+
+Ejemplo:
+
+```bash
+scp midestino:/home/jose/archivo.txt /mnt/c/Users/TU_USUARIO/Desktop/
+```
+
+Reemplaza `TU_USUARIO` por tu nombre de usuario en Windows.
+
+---
+
+## 4. Cómo funciona internamente la autenticación por claves SSH
+
+La autenticación con claves públicas y privadas se basa en criptografía asimétrica.
+
+1. **Generación del par de claves**
+
+   * La clave privada (`id_rsa`) se guarda localmente y no se comparte.
+   * La clave pública (`id_rsa.pub`) se copia en el servidor dentro de `~/.ssh/authorized_keys`.
+
+2. **Proceso de conexión**
+
+   * El servidor busca una clave pública que coincida.
+   * Envía un reto cifrado con esa clave.
+   * El cliente responde con una firma usando su clave privada.
+   * El servidor verifica la firma con la clave pública.
+
+Este proceso asegura que solo quien tenga la clave privada puede autenticarse.
+
+---
+
+## 5. Configuración avanzada
+
+### 5.1 Archivo de configuración para accesos rápidos
+
+Puedes crear un archivo `~/.ssh/config` con accesos rápidos:
+
+```ini
+Host servidor-pruebas
+    HostName 192.168.1.10
+    User jose
     Port 2222
     IdentityFile ~/.ssh/id_rsa
 ```
 
-Then, instead of typing the full connection command, you can simply use:
+Con eso, en lugar de escribir todo el comando, puedes usar:
 
 ```bash
-ssh my-server
+ssh servidor-pruebas
 ```
 
-### 5.2 Disabling Passwords and Allowing Only Keys on the Server
+Y también:
 
-Edit `/etc/ssh/sshd_config` on the server and change:
+```bash
+scp servidor-pruebas:/ruta/archivo.txt ./
+```
+
+### 5.2 Desactivar contraseñas y permitir solo claves en el servidor
+
+Edita `/etc/ssh/sshd_config` en el servidor y configura:
 
 ```ini
 PasswordAuthentication no
 PubkeyAuthentication yes
 ```
 
-Then restart the SSH service:
+Reinicia el servicio SSH:
 
 ```bash
 sudo systemctl restart ssh
@@ -177,23 +222,25 @@ sudo systemctl restart ssh
 
 ---
 
-## 6. Troubleshooting
+## 6. Resolución de problemas
 
-If you cannot connect without a password, check:
+Si no puedes conectarte sin contraseña, revisa:
 
-- **Correct permissions** on the server:
+* **Permisos correctos en el servidor**:
+
   ```bash
   chmod 700 ~/.ssh
   chmod 600 ~/.ssh/authorized_keys
   ```
-- **That the public key is in `~/.ssh/authorized_keys`** on the server.
-- **That the SSH service allows key authentication** in `/etc/ssh/sshd_config`.
-- **Enable verbose mode** to debug errors:
+* **Que la clave pública esté realmente en `~/.ssh/authorized_keys`.**
+* **Que el servidor tenga habilitada la autenticación con claves en `/etc/ssh/sshd_config`.**
+* **Usa modo verbose para ver más detalles**:
+
   ```bash
-  ssh -v user@server
+  ssh -v usuario@servidor
   ```
 
-If you still have issues, check the server logs:
+Si necesitas revisar los logs del servidor:
 
 ```bash
 sudo journalctl -u ssh -n 50 --no-pager
@@ -201,9 +248,6 @@ sudo journalctl -u ssh -n 50 --no-pager
 
 ---
 
-## 7. Conclusion
+## 7. Conclusión
 
-SSH and SCP are essential tools for remote server administration. Using SSH keys enhances security and automates connections without requiring passwords.
-
-If you properly configure these mechanisms, you can securely and efficiently connect to your servers.
-
+SSH y SCP son herramientas fundamentales para la administración remota de servidores. El uso de claves SSH mejora la seguridad y permite automatizar conexiones sin necesidad de contraseñas. Si además usas WSL, puedes integrar fácilmente transferencias entre Linux y el entorno Windows.
