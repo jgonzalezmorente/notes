@@ -12,6 +12,7 @@
 1. [Cómo crear un Dockerfile](#cómo-crear-un-dockerfile)
 1. [¿Qué es Docker Compose?](#qué-es-docker-compose)
 1. [Docker Compose: Comandos clave](#docker-compose-comandos-clave)
+1. [Docker Compose: Levantar y reconstruir un solo contenedor](#levantar-y-reconstruir-un-solo-contenedor-con-docker-compose)
 1. [Cómo crear un archivo `docker-compose.yml`](#cómo-crear-un-archivo-docker-composeyml)
 1. [Volúmenes en Docker Compose](#volúmenes-en-docker-compose)
 1. [Redes en Docker Compose](#redes-en-docker-compose)
@@ -160,6 +161,50 @@ En lugar de iniciar manualmente cada contenedor, puedes orquestar todos los serv
    ```bash
    docker-compose build
    ```
+
+Por supuesto, aquí tienes la sección sin iconos:
+
+---
+
+### **Levantar y reconstruir un solo contenedor con Docker Compose**
+
+Cuando tienes varios servicios definidos en `docker-compose.yml` y quieres reconstruir y levantar solo uno, sin afectar los demás que ya están en ejecución, puedes hacerlo fácilmente.
+
+#### Sintaxis:
+
+```bash
+docker-compose up --build -d nombre_servicio
+```
+
+O con la nueva sintaxis:
+
+```bash
+docker compose up --build -d nombre_servicio
+```
+
+Esto hará lo siguiente:
+
+* Reconstruye solo la imagen del servicio especificado (si hay cambios en el `Dockerfile` o código).
+* Levanta ese contenedor (deteniéndolo y reemplazándolo si ya estaba corriendo).
+* No afecta al resto de servicios que ya están en ejecución.
+
+#### Nota
+
+No es necesario detener el contenedor manualmente. Docker Compose se encarga de reemplazarlo si es necesario.
+
+#### Para hacer solo `build`:
+
+```bash
+docker-compose build nombre_servicio
+```
+
+O con la nueva sintaxis:
+
+```bash
+docker compose build nombre_servicio
+```
+
+Esto permite mantener todos los servicios en marcha y trabajar sobre uno solo de forma aislada.
 
 ---
 
