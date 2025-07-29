@@ -1,4 +1,4 @@
-# Guía Completa de `requests` en Python
+# Guía Completa de `requests`
 
 ## Instalación
 
@@ -177,9 +177,26 @@ proxies = {
 ## Verificar certificados SSL
 
 ```python
+# Verificación con certificado del sistema (por defecto)
 response = requests.get("https://secure.example.com", verify=True)
-# Para desactivarlo (no recomendado):
+
+# Verificación desactivada (no recomendado)
 response = requests.get("https://secure.example.com", verify=False)
+
+# Verificación con un certificado de CA personalizado (útil si el servidor usa un certificado autofirmado)
+response = requests.get("https://secure.example.com", verify="ruta/ca_certificado.pem")
+```
+
+## Usar un certificado de cliente
+
+Si el servidor requiere autenticación mediante certificado de cliente:
+
+```python
+# certificado en un solo archivo .pem (certificado + clave privada)
+response = requests.get("https://api.segura.com", cert="ruta/certificado.pem")
+
+# o dos archivos separados
+response = requests.get("https://api.segura.com", cert=("ruta/cert.crt", "ruta/clave.key"))
 ```
 
 ## Stream de respuesta
@@ -198,4 +215,4 @@ def print_url(r, *args, **kwargs):
     print("Request to:", r.url)
 
 response = requests.get("https://example.com", hooks={'response': print_url})
-```
+
