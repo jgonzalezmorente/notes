@@ -92,9 +92,20 @@ Subsystem sftp internal-sftp
 Match User sftpuser
     ChrootDirectory /sftp
     ForceCommand internal-sftp
+    PasswordAuthentication yes
     X11Forwarding no
     AllowTcpForwarding no
+    PermitTunnel no
 ```
+| Línea                        | Qué hace                                                 | Motivo                                                        |
+| ---------------------------- | -------------------------------------------------------- | ------------------------------------------------------------- |
+| `Match User sftpuser`        | Aplica todo lo siguiente solo a este usuario.            | Permite aislar la configuración sin afectar a otros.          |
+| `ChrootDirectory /sftp`      | Enjaula al usuario dentro de `/sftp`.                    | Evita que vea o acceda al resto del sistema.                  |
+| `ForceCommand internal-sftp` | Obliga a usar el subsistema interno de SFTP (sin shell). | Impide ejecutar comandos SSH o abrir terminales.              |
+| `PasswordAuthentication yes` | Permite login por contraseña (opcional).                 | Útil si no usas claves SSH.                                   |
+| `X11Forwarding no`           | Desactiva reenvío gráfico (X11).                         | No aplica a SFTP y mejora la seguridad.                       |
+| `AllowTcpForwarding no`      | Desactiva reenvío de puertos (port forwarding).          | Evita que el usuario use SSH como túnel TCP.                  |
+| `PermitTunnel no`            | Desactiva túneles de red SSH (TUN/TAP).                  | Evita que el usuario cree una VPN o túnel cifrado usando SSH. |
 
 > **Opcional (si quieres acceso con contraseña):**
 >
