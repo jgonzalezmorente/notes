@@ -62,6 +62,8 @@ Como $f(\alpha)=0$,
 $$|f(x_n)|=|f'(\xi_n)|\,|x_n-\alpha|\ge m\,|x_n-\alpha|$$
 Despejando,
 $$|x_n-\alpha|\le \frac{|f(x_n)|}{m}$$
+quedando demostrada la primera estimación.
+
 Ahora aplicamos el TVM a $f(x_{n-1})-f(\alpha)$: existe $\eta_{n-1}$ entre $x_{n-1}$ y $\alpha$ tal que
 $$f(x_{n-1})=f'(\eta_{n-1})(x_{n-1}-\alpha)$$
 Definimos
@@ -80,7 +82,7 @@ $$\frac{|x_n-\alpha|}{|x_n-x_{n-1}|}=\frac{1-r}{r}$$
 
 Ahora acotamos $r$. Como $|f'(\eta_{n-1})|\ge m$ y $|f'(x_{n-1})|\le M$,
 $$r=\frac{|f'(\eta_{n-1})|}{|f'(x_{n-1})|}\ge \frac{m}{M}$$
-Además, dado que estamos suponiendo $f''>0$, en $(a,b)$, $f'$ es creciente y como $\alpha\leq x_{n-1}$ se tiene que $r\le 1$.
+Además, dado que estamos suponiendo $f''>0$, en $(a,b)$, $f'$ es creciente y como $\alpha\leq\eta_{n-1}\leq x_{n-1}$ se tiene que $r\le 1$.
 Por tanto $r\in\left[\frac{m}{M},1\right]$, y como $\phi(r)=\frac{1-r}{r}=\frac1r-1$ es decreciente,
 $$\frac{1-r}{r}\le \frac{1-\frac{m}{M}}{\frac{m}{M}}=\frac{M-m}{m}$$
 Concluimos,
