@@ -11,7 +11,7 @@ Sea $f:(a,b)\to\mathbb{R}$ una función de clase $C^2$ en $(a,b)$. Supongamos qu
 
 Definimos la sucesión de Newton
 $$
-    x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}.
+    x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}
 $$
 
 Entonces se cumplen:
@@ -22,7 +22,7 @@ Entonces se cumplen:
    $$
    0<m\le |f'(x)|\le M \quad \text{para todo } x \text{ en un intervalo que contiene a } \alpha \text{ y a } x_n,
    $$
-   entonces para todo $n\ge 2$ se verifican
+   entonces para todo $n\ge 1$ se verifican
    $$
    |x_n-\alpha|\le \frac{|f(x_n)|}{m},
    \qquad
