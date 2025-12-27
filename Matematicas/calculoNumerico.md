@@ -10,9 +10,7 @@ Sea $f:(a,b)\to\mathbb{R}$ una función de clase $C^2$ en $(a,b)$. Supongamos qu
 4. Se toma $x_0\in(a,b)$ con la condición de arranque $f(x_0)\,f''(x_0)>0$
 
 Definimos la sucesión de Newton
-$$
-    x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}
-$$
+$$x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}$$
 
 Entonces se cumplen:
 
